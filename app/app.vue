@@ -29,3 +29,11 @@ const { showUpgradeModal, requiredTier, blockedFeature, closeUpgrade, handleUpgr
 // Provide to all descendants
 provide(UPGRADE_INJECTION_KEY, upgrade)
 </script>
+
+<style>
+/* Global Refinement: Heavier, more intentional scroll */
+html, body {
+  overscroll-behavior-y: none; /* Removes elastic bounce = feels grounded */
+  scroll-behavior: smooth; /* Polite anchor jumps only */
+}
+</style>

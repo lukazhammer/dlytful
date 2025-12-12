@@ -64,9 +64,14 @@ onUnmounted(() => {
         <div class="mt-14">
           <NuxtLink 
             to="#join" 
-            class="inline-block text-dlytful-ink-cool text-sm border-b border-dlytful-border-cool pb-1 hover:border-dlytful-ink-cool transition-colors"
+            class="group inline-flex flex-col items-start"
           >
-            Let me see it
+            <span class="text-dlytful-ink-cool text-sm border-b border-dlytful-border-cool pb-1 group-hover:border-dlytful-ink-cool transition-colors">
+              Let me see it
+            </span>
+            <span class="mt-2 text-[10px] text-dlytful-ink-distant/80 tracking-wide">
+              Start the translation
+            </span>
           </NuxtLink>
         </div>
       </div>
@@ -115,14 +120,23 @@ onUnmounted(() => {
     <!-- The shift -->
     <div class="h-28 md:h-36 bg-gradient-to-b from-dlytful-warmth/40 via-[#F9F6F0] to-[#F8F5EE]"></div>
 
+    <!-- The mechanism -->
+    <section class="pt-28 px-6 bg-[#F8F5EE]">
+      <div class="max-w-sm mx-auto reveal">
+        <p class="text-dlytful-ink text-base leading-relaxed">
+          We extract what you meant to build. Bolt gets a prompt. Now it feels like yours.
+        </p>
+      </div>
+    </section>
+
     <!-- The aside -->
-    <section class="py-28 md:py-36 px-6 bg-[#F8F5EE]">
+    <section class="pt-16 pb-28 md:pb-36 px-6 bg-[#F8F5EE]">
       <div class="max-w-sm mx-auto reveal">
         <p class="text-sm text-dlytful-ink-muted leading-loose">
           name what matters.
-          <span class="block mt-5 text-dlytful-ink-light/70">trace what you meant.</span>
-          <span class="block mt-4 text-dlytful-ink-light/60">translate it.</span>
-          <span class="block mt-2 text-dlytful-ink-light/50">see it take form.</span>
+          <span class="block mt-3 text-dlytful-ink-light/70">trace what you meant.</span>
+          <span class="block mt-3 text-dlytful-ink-light/60">translate it.</span>
+          <span class="block mt-3 text-dlytful-ink-light/50">see it take form.</span>
         </p>
       </div>
     </section>
@@ -180,6 +194,9 @@ onUnmounted(() => {
 
     <section id="join" class="py-20 md:py-28 px-6 bg-dlytful-cream-dark">
       <div class="max-w-sm mx-auto reveal text-center">
+        <p class="text-[10px] text-dlytful-ink-muted/50 uppercase tracking-widest mb-4">
+          Early access
+        </p>
         <EmailForm variant="footer" />
       </div>
     </section>
@@ -208,6 +225,8 @@ onUnmounted(() => {
   letter-spacing: -0.02em;
   color: #5A9BC9; /* dlytful-sky — confidence entering late */
 }
+
+
 
 .reveal {
   opacity: 0;

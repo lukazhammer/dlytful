@@ -14,7 +14,7 @@ import DlytfulLogo from '~/components/ui/DlytfulLogo.vue'
         to="/login" 
         class="text-sm text-dlytful-ink-distant hover:text-dlytful-ink-cool transition-colors"
       >
-        Sign in
+        Sign in <span class="text-[10px] opacity-70 ml-0.5">(early access)</span>
       </NuxtLink>
     </header>
 

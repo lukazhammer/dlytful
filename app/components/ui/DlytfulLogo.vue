@@ -34,7 +34,7 @@ const sizeClasses = computed(() => {
     :class="sizeClasses"
   >
     <template v-if="variant === 'full'">
-      dlytful
+      d<span class="text-dlytful-sun">lyt</span>ful
     </template>
     <template v-else>
       d

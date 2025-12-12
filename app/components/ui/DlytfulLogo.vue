@@ -12,33 +12,32 @@ const props = withDefaults(defineProps<Props>(), {
 const sizeClasses = computed(() => {
   if (props.variant === 'mark') {
     switch (props.size) {
-      case 'sm': return 'text-xl'
-      case 'md': return 'text-3xl'
-      case 'lg': return 'text-5xl'
-      default: return 'text-3xl'
-    }
-  } else {
-    // Full
-    switch (props.size) {
       case 'sm': return 'text-lg'
       case 'md': return 'text-2xl'
       case 'lg': return 'text-4xl'
       default: return 'text-2xl'
+    }
+  } else {
+    switch (props.size) {
+      case 'sm': return 'text-base'
+      case 'md': return 'text-xl'
+      case 'lg': return 'text-2xl'
+      default: return 'text-xl'
     }
   }
 })
 </script>
 
 <template>
-  <div 
-    class="font-serif font-bold tracking-tight text-dlytful-sun select-none"
+  <span 
+    class="font-serif font-semibold tracking-tight text-dlytful-ink select-none"
     :class="sizeClasses"
   >
     <template v-if="variant === 'full'">
       dlytful
     </template>
     <template v-else>
-      D
+      d
     </template>
-  </div>
+  </span>
 </template>

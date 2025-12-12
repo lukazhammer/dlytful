@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import DlytfulInput from '~/components/ui/DlytfulInput.vue'
 import DlytfulButton from '~/components/ui/DlytfulButton.vue'
+import DlytfulInput from '~/components/ui/DlytfulInput.vue'
 import { useAuth } from '~/composables/useAuth'
 
 definePageMeta({
@@ -39,31 +39,37 @@ const handleSubmit = async () => {
 
 <template>
   <div class="space-y-6">
-    <div class="text-center">
-      <h1 class="font-serif text-3xl font-bold text-gray-900 mb-2">Welcome back</h1>
-      <p class="text-gray-600 font-sans">Continue building your brand</p>
+    <!-- Header: Calm greeting -->
+    <div>
+      <h1 class="font-serif text-headline text-dlytful-ink mb-1">Welcome back</h1>
+      <p class="text-dlytful-ink-muted">Continue where you left off.</p>
     </div>
 
     <form @submit.prevent="handleSubmit" class="space-y-4">
-      <div v-if="error" class="bg-red-50 border border-red-100 rounded-lg p-4 text-red-600 text-sm font-sans">
+      <!-- Error: Gentle, not alarming -->
+      <div v-if="error" class="bg-dlytful-cream rounded-soft px-4 py-3 text-sm text-dlytful-ink">
         {{ error }}
       </div>
 
-      <DlytfulInput
-        v-model="email"
-        label="Email"
-        type="email"
-        placeholder="you@example.com"
-        :disabled="loading"
-      />
+      <div class="space-y-3">
+        <DlytfulInput
+          v-model="email"
+          label="Email"
+          type="email"
+          placeholder="you@example.com"
+          :disabled="loading"
+          autocomplete="email"
+        />
 
-      <DlytfulInput
-        v-model="password"
-        label="Password"
-        type="password"
-        placeholder="••••••••"
-        :disabled="loading"
-      />
+        <DlytfulInput
+          v-model="password"
+          label="Password"
+          type="password"
+          placeholder="••••••••"
+          :disabled="loading"
+          autocomplete="current-password"
+        />
+      </div>
 
       <DlytfulButton
         type="submit"
@@ -76,9 +82,9 @@ const handleSubmit = async () => {
       </DlytfulButton>
     </form>
 
-    <p class="text-center text-sm text-gray-600 font-sans">
+    <p class="text-center text-sm text-dlytful-ink-muted">
       Don't have an account?
-      <NuxtLink to="/register" class="text-dlytful-sun hover:underline font-medium">
+      <NuxtLink to="/register" class="text-dlytful-ink hover:text-dlytful-sun transition-colors">
         Sign up
       </NuxtLink>
     </p>

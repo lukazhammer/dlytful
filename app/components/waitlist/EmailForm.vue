@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DlytfulButton from '~/components/ui/DlytfulButton.vue'
+import DlytfulInput from '~/components/ui/DlytfulInput.vue'
 import { useApi } from '~/composables/useApi'
 
 interface Props {
@@ -64,13 +65,16 @@ const handleSubmit = async () => {
       <!-- Form: Simple, unhurried -->
       <form v-else @submit.prevent="handleSubmit" class="space-y-3">
         <div class="flex flex-col sm:flex-row gap-3">
-          <input 
-            v-model="email" 
-            type="email"
-            placeholder="your@email.com" 
-            :disabled="loading"
-            class="flex-grow px-4 py-3 bg-white border border-dlytful-border rounded-soft text-dlytful-ink placeholder:text-dlytful-ink-muted/50 focus:outline-none focus:border-dlytful-sun/50 focus:ring-2 focus:ring-dlytful-sun/10 transition-all disabled:opacity-50"
-          />
+          <div class="flex-grow">
+            <DlytfulInput
+              v-model="email"
+              type="email"
+              placeholder="your@email.com"
+              :disabled="loading"
+              autocomplete="email"
+              required
+            />
+          </div>
           <DlytfulButton 
             type="submit" 
             :loading="loading"

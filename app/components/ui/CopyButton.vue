@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useClipboard } from '~/composables/useClipboard'
+import DlytfulButton from '~/components/ui/DlytfulButton.vue'
 
 interface Props {
   content: string
@@ -17,17 +18,18 @@ const handleCopy = async () => {
 </script>
 
 <template>
-  <button 
+  <DlytfulButton 
     v-if="isSupported"
-    type="button"
-    class="relative inline-flex items-center justify-center p-2 rounded-lg transition-colors duration-200 hover:bg-dlytful-cream group"
+    variant="ghost" 
+    size="sm"
+    class="relative group !px-2 !py-2"
     @click="handleCopy"
     :aria-label="copied ? 'Copied to clipboard' : 'Copy to clipboard'"
   >
     <!-- Copy Icon -->
     <svg 
       v-if="!copied" 
-      class="w-5 h-5 text-gray-400 group-hover:text-dlytful-sun transition-colors" 
+      class="w-5 h-5 transition-colors group-hover:text-dlytful-sun" 
       fill="none" 
       viewBox="0 0 24 24" 
       stroke="currentColor"
@@ -38,7 +40,7 @@ const handleCopy = async () => {
     <!-- Check Icon -->
     <svg 
       v-else 
-      class="w-5 h-5 text-green-500 scale-110 transition-transform" 
+      class="w-5 h-5 text-dlytful-herb scale-110 transition-transform" 
       fill="none" 
       viewBox="0 0 24 24" 
       stroke="currentColor"
@@ -46,9 +48,9 @@ const handleCopy = async () => {
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
     </svg>
 
-    <!-- Tooltip -->
-    <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-sans">
+    <!-- Tooltip (preserved but using dlytful colors) -->
+    <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-dlytful-ink text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-sans shadow-soft">
       {{ copied ? 'Copied!' : 'Copy' }}
     </span>
-  </button>
+  </DlytfulButton>
 </template>

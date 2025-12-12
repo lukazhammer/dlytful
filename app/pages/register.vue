@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import DlytfulInput from '~/components/ui/DlytfulInput.vue'
 import DlytfulButton from '~/components/ui/DlytfulButton.vue'
+import DlytfulInput from '~/components/ui/DlytfulInput.vue'
 import { useAuth } from '~/composables/useAuth'
 
 definePageMeta({
@@ -20,7 +20,6 @@ const error = ref<string | null>(null)
 const handleSubmit = async () => {
   error.value = null
   
-  // Validation
   if (!email.value || !password.value || !confirmPassword.value) {
     error.value = 'Please fill in all fields'
     return
@@ -51,39 +50,46 @@ const handleSubmit = async () => {
 
 <template>
   <div class="space-y-6">
-    <div class="text-center">
-      <h1 class="font-serif text-3xl font-bold text-gray-900 mb-2">Start translating</h1>
-      <p class="text-gray-600 font-sans">Create your dlytful account</p>
+    <!-- Header -->
+    <div>
+      <h1 class="font-serif text-headline text-dlytful-ink mb-1">Create your account</h1>
+      <p class="text-dlytful-ink-muted">Start translating your brand.</p>
     </div>
 
     <form @submit.prevent="handleSubmit" class="space-y-4">
-      <div v-if="error" class="bg-red-50 border border-red-100 rounded-lg p-4 text-red-600 text-sm font-sans">
+      <!-- Error -->
+      <div v-if="error" class="bg-dlytful-cream rounded-soft px-4 py-3 text-sm text-dlytful-ink">
         {{ error }}
       </div>
 
-      <DlytfulInput
-        v-model="email"
-        label="Email"
-        type="email"
-        placeholder="you@example.com"
-        :disabled="loading"
-      />
+      <div class="space-y-3">
+        <DlytfulInput
+          v-model="email"
+          label="Email"
+          type="email"
+          placeholder="you@example.com"
+          :disabled="loading"
+          autocomplete="email"
+        />
 
-      <DlytfulInput
-        v-model="password"
-        label="Password"
-        type="password"
-        placeholder="At least 8 characters"
-        :disabled="loading"
-      />
+        <DlytfulInput
+          v-model="password"
+          label="Password"
+          type="password"
+          placeholder="At least 8 characters"
+          :disabled="loading"
+          autocomplete="new-password"
+        />
 
-      <DlytfulInput
-        v-model="confirmPassword"
-        label="Confirm password"
-        type="password"
-        placeholder="••••••••"
-        :disabled="loading"
-      />
+        <DlytfulInput
+          v-model="confirmPassword"
+          label="Confirm password"
+          type="password"
+          placeholder="••••••••"
+          :disabled="loading"
+          autocomplete="new-password"
+        />
+      </div>
 
       <DlytfulButton
         type="submit"
@@ -96,9 +102,9 @@ const handleSubmit = async () => {
       </DlytfulButton>
     </form>
 
-    <p class="text-center text-sm text-gray-600 font-sans">
+    <p class="text-center text-sm text-dlytful-ink-muted">
       Already have an account?
-      <NuxtLink to="/login" class="text-dlytful-sun hover:underline font-medium">
+      <NuxtLink to="/login" class="text-dlytful-ink hover:text-dlytful-sun transition-colors">
         Sign in
       </NuxtLink>
     </p>

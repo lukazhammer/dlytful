@@ -1,6 +1,6 @@
 <script setup lang="ts">
 interface Props {
-  variant?: 'primary' | 'secondary' | 'ghost'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'soft'
   size?: 'sm' | 'md' | 'lg'
   disabled?: boolean
   loading?: boolean
@@ -20,11 +20,16 @@ const emit = defineEmits<{
 const variantClasses = computed(() => {
   switch (props.variant) {
     case 'primary':
-      return 'bg-dlytful-sun text-white hover:bg-[#E68A00] shadow-sm'
+      // Warm amber, not aggressive orange
+      return 'bg-dlytful-sun text-white hover:bg-dlytful-sun/90 shadow-soft'
     case 'secondary':
-      return 'bg-dlytful-sky text-white hover:opacity-90 shadow-sm'
+      // Subtle border, no fill
+      return 'bg-transparent text-dlytful-ink border border-dlytful-border hover:border-dlytful-ink-muted'
+    case 'soft':
+      // Very subtle background
+      return 'bg-dlytful-cream text-dlytful-ink hover:bg-dlytful-cream-dark'
     case 'ghost':
-      return 'bg-transparent text-dlytful-sun hover:bg-dlytful-sun/10'
+      return 'bg-transparent text-dlytful-ink-light hover:text-dlytful-ink'
     default:
       return ''
   }
@@ -33,11 +38,11 @@ const variantClasses = computed(() => {
 const sizeClasses = computed(() => {
   switch (props.size) {
     case 'sm':
-      return 'px-3 py-1.5 text-sm'
+      return 'px-3 py-2 text-sm'
     case 'md':
-      return 'px-5 py-2.5 text-base'
+      return 'px-5 py-2.5 text-sm'
     case 'lg':
-      return 'px-8 py-3.5 text-lg'
+      return 'px-6 py-3 text-base'
     default:
       return ''
   }
@@ -47,7 +52,7 @@ const sizeClasses = computed(() => {
 <template>
   <button
     :class="[
-      'inline-flex items-center justify-center font-medium font-sans rounded-lg transition-all duration-150 ease-in-out box-border disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.98]',
+      'inline-flex items-center justify-center font-medium font-sans rounded-soft transition-all duration-200 ease-out disabled:opacity-40 disabled:cursor-not-allowed',
       variantClasses,
       sizeClasses
     ]"
@@ -56,7 +61,7 @@ const sizeClasses = computed(() => {
   >
     <span v-if="loading" class="mr-2">
       <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
     </span>

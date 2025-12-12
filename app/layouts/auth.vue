@@ -1,20 +1,31 @@
 <script setup lang="ts">
 import DlytfulLogo from '~/components/ui/DlytfulLogo.vue'
-import DlytfulCard from '~/components/ui/DlytfulCard.vue'
 </script>
 
 <template>
-  <div class="min-h-screen bg-dlytful-cream flex flex-col items-center justify-center p-4 font-sans text-gray-900">
-    <div class="mb-8 transform hover:scale-105 transition-transform duration-300">
-      <NuxtLink to="/">
-        <DlytfulLogo size="lg" />
+  <div class="min-h-screen bg-dlytful-linen flex flex-col items-center justify-center px-6 py-12 font-sans text-dlytful-ink">
+    <!-- Logo: Quiet anchor -->
+    <div class="mb-10">
+      <NuxtLink to="/" class="block hover:opacity-80 transition-opacity">
+        <DlytfulLogo size="md" />
       </NuxtLink>
     </div>
     
-    <div class="w-full max-w-md">
-      <DlytfulCard variant="elevated">
+    <!-- Card: Simple container, not attention-seeking -->
+    <div class="w-full max-w-sm">
+      <div class="bg-white rounded-card border border-dlytful-border-subtle p-8 shadow-soft">
         <slot />
-      </DlytfulCard>
+      </div>
+    </div>
+    
+    <!-- Back link: Always a way home -->
+    <div class="mt-8">
+      <NuxtLink 
+        to="/" 
+        class="text-sm text-dlytful-ink-muted hover:text-dlytful-ink transition-colors"
+      >
+        ← Back to home
+      </NuxtLink>
     </div>
   </div>
 </template>

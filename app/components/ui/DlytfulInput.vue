@@ -1,12 +1,14 @@
 <script setup lang="ts">
 interface Props {
   modelValue: string | number
-  label?: string
+  label?: string // Optional internal label handling
   placeholder?: string
   type?: 'text' | 'email' | 'password' | 'textarea'
-  error?: string
   disabled?: boolean
+  required?: boolean
+  autocomplete?: string
   rows?: number
+  class?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -17,6 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string | number): void
+  (e: 'blur', event: FocusEvent): void
 }>()
 
 const updateValue = (event: Event) => {
@@ -24,18 +27,27 @@ const updateValue = (event: Event) => {
   emit('update:modelValue', target.value)
 }
 
+// Source of truth from login.vue:
+// w-full px-4 py-3 bg-white border border-dlytful-border rounded-soft text-dlytful-ink placeholder:text-dlytful-ink-muted/50 focus:outline-none focus:border-dlytful-sun/50 focus:ring-2 focus:ring-dlytful-sun/10 transition-all disabled:opacity-50
 const inputClasses = computed(() => {
   return [
-    'w-full px-4 py-3 rounded-lg bg-dlytful-cream border transition-all duration-150 ease-in-out font-sans placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-dlytful-sun/50 focus:border-dlytful-sun',
-    props.error ? 'border-red-500 focus:ring-red-200 focus:border-red-500' : 'border-gray-200 hover:border-gray-300',
-    props.disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''
+    // Base layout & typography
+    'w-full px-4 py-3 font-sans',
+    // Colors & Borders
+    'bg-white border border-dlytful-border rounded-soft',
+    'text-dlytful-ink placeholder:text-dlytful-ink-muted/50',
+    // Focus States
+    'focus:outline-none focus:border-dlytful-sun/50 focus:ring-2 focus:ring-dlytful-sun/10',
+    // Transitions & States
+    'transition-all disabled:opacity-50',
+    props.class
   ]
 })
 </script>
 
 <template>
   <div class="flex flex-col gap-1.5 w-full">
-    <label v-if="label" class="text-sm font-medium text-gray-700 font-sans ml-1">
+    <label v-if="label" class="block text-sm text-dlytful-ink-light mb-1.5">
       {{ label }}
     </label>
     
@@ -45,8 +57,10 @@ const inputClasses = computed(() => {
       :rows="rows"
       :placeholder="placeholder"
       :disabled="disabled"
+      :required="required"
       :class="inputClasses"
       @input="updateValue"
+      @blur="(e) => emit('blur', e)"
     />
     
     <input
@@ -55,12 +69,11 @@ const inputClasses = computed(() => {
       :value="modelValue"
       :placeholder="placeholder"
       :disabled="disabled"
+      :required="required"
+      :autocomplete="autocomplete"
       :class="inputClasses"
       @input="updateValue"
+      @blur="(e) => emit('blur', e)"
     />
-
-    <span v-if="error" class="text-sm text-red-500 font-sans ml-1">
-      {{ error }}
-    </span>
   </div>
 </template>

@@ -1,26 +1,23 @@
 <script setup lang="ts">
 import EmailForm from '~/components/waitlist/EmailForm.vue'
-import DlytfulLogo from '~/components/ui/DlytfulLogo.vue'
 
 definePageMeta({
   layout: 'default'
 })
 
-// Scroll animation logic
 const observer = ref<IntersectionObserver | null>(null)
-const animatedElements = ref<Set<Element>>(new Set())
 
 onMounted(() => {
   observer.value = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        entry.target.classList.add('animate-fade-in-up')
+        entry.target.classList.add('revealed')
         observer.value?.unobserve(entry.target)
       }
     })
   }, { threshold: 0.1 })
 
-  document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+  document.querySelectorAll('.reveal').forEach(el => {
     observer.value?.observe(el)
   })
 })
@@ -31,78 +28,195 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-24 md:gap-32">
-    <!-- Hero Section -->
-    <section class="text-center pt-8 md:pt-16 max-w-4xl mx-auto px-4 reveal-on-scroll opacity-0 translate-y-4 transition-all duration-700">
-      <h1 class="font-serif text-5xl md:text-7xl font-bold text-gray-900 leading-tight mb-6">
-        You built something.<br class="hidden md:block" />
-        Now make it look like<br class="hidden md:block" />
-        <span class="text-dlytful-sun">it has a soul.</span>
-      </h1>
-      <p class="font-sans text-xl md:text-2xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-        Paste one prompt into Bolt. See the difference.
-      </p>
+  <div class="min-h-screen">
+    
+    <!-- ═══════════════════════════════════════════════════════════
+         I. MOTIF DECLARATION (HERO)
+         Withheld, cool, unresolved — minor key
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="hero-section min-h-[90vh] flex flex-col justify-center px-6 relative overflow-hidden bg-dlytful-cool">
+      <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/40 via-transparent to-dlytful-cool-muted/20"></div>
+      </div>
       
-      <div class="max-w-md mx-auto mb-12">
-        <EmailForm variant="hero" />
-      </div>
-    </section>
+      <div class="max-w-2xl relative z-10">
+        <!-- Note 1: The calm assertion -->
+        <p class="text-dlytful-ink-cool hero-text leading-[1.1] tracking-tight font-serif mb-8">
+          You made something real.
+        </p>
+        
+        <!-- Note 2: The heavier realization -->
+        <p class="motif-line mt-32 mb-4">
+          It just doesn’t look like yours yet.
+        </p>
+        
+        <!-- Commentary (secondary) -->
+        <p class="hero-subtext text-dlytful-ink-distant mt-12 max-w-md leading-relaxed">
+          Not a branding problem. Not a design problem.
+          <span class="block mt-1">A recognition problem.</span>
+        </p>
 
-    <!-- Problem Section -->
-    <section class="max-w-3xl mx-auto px-4 text-center reveal-on-scroll opacity-0 translate-y-4 transition-all duration-700 delay-100">
-      <h2 class="font-serif text-2xl font-semibold text-dlytful-sky mb-6">The Gap</h2>
-      <p class="font-sans text-xl md:text-2xl text-gray-800 leading-relaxed font-light">
-        You shipped with Cursor, Bolt, or Replit. It works. But it looks like... <span class="italic font-serif">a template</span>. 
-        Same fonts as everyone else. No clear message. No reason to remember you.
-      </p>
-    </section>
+        <p class="text-dlytful-ink-distant/60 mt-20 text-sm max-w-sm">
+          This isn't for people building companies. 
+          It's for people who built something they can't stop thinking about.
+        </p>
 
-    <!-- Solution Section -->
-    <section class="max-w-3xl mx-auto px-4 text-center reveal-on-scroll opacity-0 translate-y-4 transition-all duration-700 delay-100">
-      <h2 class="font-serif text-2xl font-semibold text-dlytful-herb mb-6">The Translation</h2>
-      <p class="font-sans text-xl md:text-2xl text-gray-800 leading-relaxed font-light">
-        <span class="font-bold">dlytful</span> translates what you meant into what people see. 
-        Answer a few questions. Get a prompt. Paste it. Watch your app transform.
-      </p>
-    </section>
-
-    <!-- How It Works Section -->
-    <section class="max-w-5xl mx-auto px-4 reveal-on-scroll opacity-0 translate-y-4 transition-all duration-700 delay-100">
-      <div class="grid md:grid-cols-3 gap-8 md:gap-12">
-        <div class="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-50">
-          <div class="w-12 h-12 bg-dlytful-sun/10 text-dlytful-sun rounded-full flex items-center justify-center mx-auto mb-4 font-serif font-bold text-xl">1</div>
-          <h3 class="font-serif text-xl font-bold mb-3">Tell us about your product</h3>
-          <p class="text-gray-600">Answer 3-5 simple questions about what you built and who it's for. (2 min)</p>
-        </div>
-        <div class="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-50">
-          <div class="w-12 h-12 bg-dlytful-sky/10 text-dlytful-sky rounded-full flex items-center justify-center mx-auto mb-4 font-serif font-bold text-xl">2</div>
-          <h3 class="font-serif text-xl font-bold mb-3">Get your translation</h3>
-          <p class="text-gray-600">We generate a comprehensive brand prompt including colors, fonts, and vibe.</p>
-        </div>
-        <div class="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-50">
-          <div class="w-12 h-12 bg-dlytful-herb/10 text-dlytful-herb rounded-full flex items-center justify-center mx-auto mb-4 font-serif font-bold text-xl">3</div>
-          <h3 class="font-serif text-xl font-bold mb-3">Paste and transform</h3>
-          <p class="text-gray-600">Drop the prompt into your AI builder and watch your app come to life.</p>
+        <div class="mt-14">
+          <NuxtLink 
+            to="#join" 
+            class="inline-block text-dlytful-ink-cool text-sm border-b border-dlytful-border-cool pb-1 hover:border-dlytful-ink-cool transition-colors"
+          >
+            Let me see it
+          </NuxtLink>
         </div>
       </div>
     </section>
 
-    <!-- Final CTA Section -->
-    <section class="text-center py-12 md:py-24 max-w-3xl mx-auto px-4 reveal-on-scroll opacity-0 translate-y-4 transition-all duration-700 delay-100">
-      <h2 class="font-serif text-3xl md:text-4xl font-bold text-gray-900 mb-8">
-        Join the waitlist. <br />
-        <span class="text-gray-500 text-2xl md:text-3xl font-medium mt-2 block">Get the free brand kit immediately.</span>
-      </h2>
+    <!-- Drift (not a hard reset) -->
+    <div class="h-32 md:h-44 bg-gradient-to-b from-dlytful-cool via-dlytful-cool-muted/30 to-dlytful-linen"></div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         II. RECOGNITION — tension stabilizes
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="px-6 pt-24 pb-32 md:pb-44 bg-dlytful-linen">
       <div class="max-w-md mx-auto">
+        <p class="text-[11px] text-dlytful-ink-muted uppercase tracking-[0.2em] mb-20">
+          The familiar feeling
+        </p>
+        
+        <p class="text-dlytful-ink leading-[2.2]">
+          The thing you built works. People use it. 
+          But when you look at it, you feel the distance 
+          between what you meant and what they see.
+        </p>
+        
+        <p class="text-dlytful-ink leading-[2.2] mt-12">
+          It's not broken. It just doesn't feel like you made it.
+        </p>
+
+        <p class="font-serif italic text-dlytful-ink mt-28 leading-relaxed text-lg">
+          That happens to everyone who ships before they're ready. 
+          Which is everyone who ships.
+        </p>
+      </div>
+    </section>
+
+    <!-- The exhale -->
+    <section class="relative">
+      <div class="absolute inset-0 bg-gradient-to-b from-dlytful-linen via-[#F8F6F1] to-dlytful-warmth/40"></div>
+      
+      <div class="relative h-[70vh] min-h-[450px] flex items-center">
+        <p class="text-dlytful-ink-muted/15 text-[11px] tracking-wide" style="margin-left: 11%; margin-top: 18%;">
+          (you're allowed to take your time)
+        </p>
+      </div>
+    </section>
+
+    <!-- The shift -->
+    <div class="h-28 md:h-36 bg-gradient-to-b from-dlytful-warmth/40 via-[#F9F6F0] to-[#F8F5EE]"></div>
+
+    <!-- The aside -->
+    <section class="py-28 md:py-36 px-6 bg-[#F8F5EE]">
+      <div class="max-w-sm mx-auto reveal">
+        <p class="text-sm text-dlytful-ink-muted leading-loose">
+          name what matters.
+          <span class="block mt-5 text-dlytful-ink-light/70">trace what you meant.</span>
+          <span class="block mt-4 text-dlytful-ink-light/60">translate it.</span>
+          <span class="block mt-2 text-dlytful-ink-light/50">see it take form.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- Same breath continues -->
+    <section class="pt-8 pb-32 md:pt-12 md:pb-40 px-6 bg-gradient-to-b from-[#F8F5EE] to-dlytful-cream">
+      <div class="max-w-lg reveal" style="margin-left: 10%;">
+        <p class="text-dlytful-ink-light leading-relaxed">
+          Most AI-built apps look the same because most people 
+          skip the hard part: deciding what they want to say.
+        </p>
+        <p class="text-dlytful-ink-light mt-12">
+          If you haven't figured that out yet, no prompt will help. 
+          <span class="block mt-2">Come back when you have.</span>
+        </p>
+      </div>
+    </section>
+
+    <section class="py-36 md:py-44 px-6 bg-dlytful-cream">
+      <div class="max-w-md mx-auto reveal">
+        <p class="text-dlytful-ink leading-[2]">
+          Some people will never notice the difference.
+        </p>
+        <p class="text-dlytful-ink leading-[2] mt-1">
+          They'll use it. They'll move on.
+        </p>
+        
+        <p class="text-dlytful-ink font-medium mt-12 leading-[2]">
+          But you will.
+        </p>
+        
+        <p class="text-dlytful-ink leading-[2] mt-12">
+          You'll see where the edges feel wrong.
+        </p>
+        <p class="text-dlytful-ink leading-[2] mt-1">
+          You'll know when something almost says what you meant.
+        </p>
+        
+        <p class="text-dlytful-ink leading-[2] mt-12">
+          That's not obsession.
+        </p>
+        <p class="text-dlytful-ink leading-[2] mt-1">
+          That's care.
+        </p>
+        
+        <!-- The residue -->
+        <p class="font-serif text-dlytful-ink mt-16 text-lg">
+          And care leaves a trace.
+        </p>
+      </div>
+    </section>
+
+    <!-- Linger -->
+    <div class="h-24 md:h-32 bg-dlytful-cream"></div>
+
+    <section id="join" class="py-20 md:py-28 px-6 bg-dlytful-cream-dark">
+      <div class="max-w-sm mx-auto reveal text-center">
         <EmailForm variant="footer" />
       </div>
     </section>
+
   </div>
 </template>
 
 <style scoped>
-.animate-fade-in-up {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
+/* The statement: grounded, factual, calm before impact */
+.hero-text {
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  line-height: 1.0;
+  letter-spacing: -0.01em;
+}
+
+.hero-subtext {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+}
+
+/* THE PUNCH — the only accent color on the page */
+.motif-line {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: clamp(2.75rem, 9vw, 5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #5A9BC9; /* dlytful-sky — confidence entering late */
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+
+.revealed {
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>

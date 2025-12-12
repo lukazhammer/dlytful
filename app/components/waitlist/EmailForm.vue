@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import DlytfulButton from '~/components/ui/DlytfulButton.vue'
-import DlytfulInput from '~/components/ui/DlytfulInput.vue'
 import { useApi } from '~/composables/useApi'
 
 interface Props {
@@ -49,43 +48,46 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="w-full max-w-md mx-auto">
+  <div class="w-full">
     <transition name="fade" mode="out-in">
-      <div v-if="success" class="bg-green-50 border border-green-100 rounded-xl p-6 text-center">
-        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <!-- Success: Calm confirmation -->
+      <div v-if="success" class="bg-dlytful-cream rounded-card p-6 text-center">
+        <div class="w-10 h-10 bg-dlytful-herb/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-5 h-5 text-dlytful-herb" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 class="text-green-800 font-serif font-semibold text-lg mb-2">You're on the list</h3>
-        <p class="text-green-700 font-sans">Check your inbox. The brand kit is on its way.</p>
+        <p class="text-dlytful-ink font-serif">You're on the list.</p>
+        <p class="text-dlytful-ink-muted text-sm mt-1">Check your inbox for the brand kit.</p>
       </div>
 
-      <form v-else @submit.prevent="handleSubmit" class="flex flex-col gap-3">
+      <!-- Form: Simple, unhurried -->
+      <form v-else @submit.prevent="handleSubmit" class="space-y-3">
         <div class="flex flex-col sm:flex-row gap-3">
-          <div class="flex-grow">
-            <DlytfulInput 
-              v-model="email" 
-              placeholder="name@company.com" 
-              type="email"
-              :error="error || undefined"
-              :disabled="loading"
-              class="h-full"
-            />
-          </div>
+          <input 
+            v-model="email" 
+            type="email"
+            placeholder="your@email.com" 
+            :disabled="loading"
+            class="flex-grow px-4 py-3 bg-white border border-dlytful-border rounded-soft text-dlytful-ink placeholder:text-dlytful-ink-muted/50 focus:outline-none focus:border-dlytful-sun/50 focus:ring-2 focus:ring-dlytful-sun/10 transition-all disabled:opacity-50"
+          />
           <DlytfulButton 
             type="submit" 
             :loading="loading"
-            :variant="variant === 'hero' ? 'primary' : 'secondary'"
-            size="md"
+            variant="primary"
+            size="lg"
             class="whitespace-nowrap"
           >
-            Get Early Access
+            Join the waitlist
           </DlytfulButton>
         </div>
-        <p v-if="variant === 'hero'" class="text-center text-sm text-gray-500 font-sans">
-          Get the free brand kit instantly
+        
+        <!-- Error: Gentle, not alarming -->
+        <p v-if="error" class="text-sm text-dlytful-sun">
+          {{ error }}
         </p>
+        
+
       </form>
     </transition>
   </div>
@@ -94,7 +96,7 @@ const handleSubmit = async () => {
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
 }
 
 .fade-enter-from,

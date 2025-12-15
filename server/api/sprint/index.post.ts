@@ -55,7 +55,7 @@ export default defineEventHandler(async (event) => {
 
     const { data, error } = await client
         .from('sprints')
-        .insert(payload)
+        .insert(payload as never)
         .select()
         .single<SprintRow>()
 

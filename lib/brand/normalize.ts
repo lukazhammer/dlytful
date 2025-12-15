@@ -1,42 +1,86 @@
-export function normalizeProductName(text: string): string {
-    const t = text.trim();
-    if (!t) return "Your Product";
+import { dedupePreserveOrder } from "./utils";
 
-    // 1. "called X" extraction
-    const calledMatch = t.match(/\bcalled\s+([A-Z][a-zA-Z0-9\s]*)/);
-    if (calledMatch && calledMatch[1]) {
-        return calledMatch[1].trim();
+function extractCalledName(text: string): string | null {
+    // 1. Find "called " case-insensitively, capture until punctuation/newline
+    const match = text.match(/\bcalled\s+([^\.,;:\!\?\n]+)/i);
+    if (!match || !match[1]) return null;
+
+    let captured = match[1].trim();
+
+    // 2. Stop at hard punctuation (comma, period, newline)
+    // "called "Dlytful", the..." -> "Dlytful"
+    // We apply this to the already captured part.
+    const stopAtPunct = captured.match(/[^.,\n]+/)?.[0] || "";
+
+    // 2. Stop at hard stop phrases
+    const STOP_PHRASES = [" is a ", " is an ", " is the ", " which ", " that ", " for ", " with ", " to "];
+    // "called Dlytful for teams" -> "Dlytful"
+    // We check purely for " word " boundaries or start/end
+    const lower = stopAtPunct.toLowerCase();
+    let bestIndex = lower.length;
+
+    for (const phrase of STOP_PHRASES) {
+        // We look for " phrase " or " phrase" at end, etc.
+        // Actually, STOP_PHRASES are like " is a ", " for ".
+        const idx = lower.indexOf(phrase);
+        if (idx !== -1 && idx < bestIndex) {
+            bestIndex = idx;
+        }
     }
 
-    // 2. First capitalized token sequence (simple heuristic)
-    const capMatch = t.match(/([A-Z][a-zA-Z0-9]*(\s+[A-Z][a-zA-Z0-9]*)*)/);
-    if (capMatch && capMatch[1] && capMatch[1].length > 1) {
-        return capMatch[1].trim();
+    const candidate = stopAtPunct.slice(0, bestIndex).trim();
+
+    // 4. Strip quotes (if they wrap the ENTIRE candidate or just parts)
+    // We want to be careful. If the user wrote: called "My App" -> My App
+    // If they wrote: called "My App" v2 -> "My App" v2 -> My App v2 (maybe?)
+    // Our logic: remove all quotes? Or just surrounding?
+    // User requirement: "stripping quotes"
+    // Let's safe-strip all quotes for simplicity in product names
+    const clean = candidate.replace(/['"]+/g, '').trim();
+
+    if (!clean) return null;
+
+    // 5. Cap at 4 words
+    const words = clean.split(/\s+/);
+    if (words.length > 4) {
+        return words.slice(0, 4).join(' ');
     }
 
-    // Fallback: Use first 3 words
-    const words = t.split(/\s+/).slice(0, 3).join(" ");
-    if (words) {
-        // Capitalize title case for fallback
-        return words.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
-    }
-
-    return "Your Product";
+    return clean;
 }
 
-export function normalizeCategory(text: string): string {
-    const t = text.toLowerCase().trim();
-    if (!t) return "Digital Product";
+export function normalizeProductName(raw: string): string {
+    if (!raw) return "Your Product";
+    let s = raw.trim();
+    if (!s) return "Your Product";
 
-    // Map common phrases
-    if (t.includes('how the team ships') || t.includes('analytics')) return 'Workflow Intelligence';
-    if (t.includes('hydration')) return 'Hydration Tracker';
-    if (t.includes('todo') || t.includes('task')) return 'Productivity Tool';
-    if (t.includes('plant')) return 'Plant Monitor';
+    // 1. "called X" extraction (Safe, deterministic)
+    const calledName = extractCalledName(s);
+    if (calledName) return calledName;
 
-    // Default: first noun phrase-ish (first 3 words)
-    const words = t.split(/\s+/).slice(0, 3).join(" ");
-    return words.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
+    // 2. Quotes fallback (if no "called")
+    const quoteMatch = s.match(/["']([^"']+)["']/);
+    if (quoteMatch) return (quoteMatch[1] || "").trim();
+
+    // 3. Fallback: Take up to 4 words from start
+    const stopAtPunct = s.split(/[.,;:\!\?\n]/)[0] || "";
+    const words = stopAtPunct.trim().split(/\s+/);
+    const candidate = words.slice(0, 4).join(" ");
+
+    // SAFETY CHECK: If the candidate starts with "A " or "An " (e.g. "A deterministic compiler...")
+    // AND it wasn't explicitly "called X" or quoted, assume it's a description, not a name.
+    if (candidate.match(/^(a|an)\s/i)) {
+        return "Your Product";
+    }
+
+    return candidate;
+}
+
+export function normalizeCategory(raw: string): string {
+    // Simple cap
+    const s = (raw.split(/[.,]/)[0] || "").trim(); // Stop at punctuation
+    const words = s.split(/\s+/);
+    return words.slice(0, 6).join(" ");
 }
 
 export function normalizeAudience(text: string): string {
@@ -66,17 +110,21 @@ export function normalizeClause(text: string, maxWords: number = 12): string {
     return words.join(" ");
 }
 
-export function normalizeBannedWords(text: string): string[] {
-    if (!text) return ["crush it", "hustle", "growth hack", "synergy", "disrupt", "leverage", "utilize", "innovative"];
+export function normalizeBannedWords(raw: string): string[] {
+    const defaults = ["synergy", "10x", "disruptive", "AI-powered", "crush it", "hustle"];
+    const max = 8;
 
-    const list = text.split(',')
+    // If empty input, return explicit default cap
+    if (!raw || !raw.trim()) {
+        return defaults.slice(0, max);
+    }
+
+    let list = raw.split(/[,.\n;]+|\bbut\b|\bexcept\b/i)
         .map(s => s.trim())
         .filter(s => s.length > 0);
 
-    // Add defaults if list is short
-    if (list.length < 5) {
-        list.push("crush it", "hustle", "growth hack");
-    }
+    list = [...list, ...defaults];
 
-    return list.slice(0, 8); // Max 8
+    // Dedupe and cap at 8
+    return dedupePreserveOrder(list, 8);
 }

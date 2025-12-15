@@ -1,0 +1,15 @@
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+    test: {
+        include: ['test/**/*.test.ts'],
+        environment: 'node',
+        deps: {
+            optimizer: {
+                web: {
+                    include: ['@nuxt/test-utils']
+                }
+            }
+        }
+    }
+})

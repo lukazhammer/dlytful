@@ -1,75 +1,65 @@
-# Nuxt Minimal Starter
+# dlytful
+Deterministic brand identity compiler.
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## What it is
+- Accepts raw founder answers as input.
+- Compiles them into a strict BrandSpec JSON object and a markdown summary.
+- Enforces strict determinism: the same input always yields the same output.
+- Strictly adheres to the BrandSpecSchema with no extra or missing keys.
+- Includes a specHash (SHA-256) of the stable BrandSpec JSON for drift detection.
 
-## Setup
+## Non-negotiables
+- Determinism.
+- Strict schema conformity.
+- No semantic drift (no alphabetical sorting that changes meaning).
+- No external calls required in the hot path.
 
-Make sure to install dependencies:
+## Tech
+- Nuxt 3 (SSR disabled).
+- Supabase (PostgreSQL).
+- Brand Compiler in lib/brand (pure TypeScript).
 
+## Commands
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
 ```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
-
-Build the application for production:
+```bash
+npm run test
+```
 
 ```bash
-# npm
+npm run typecheck
+```
+
+```bash
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
-
-Locally preview production build:
 
 ```bash
-# npm
 npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## Environment variables
+Required:
+- SUPABASE_URL
+- SUPABASE_ANON_KEY
+
+Optional:
+- GEMINI_API_KEY
+
+## Project layout
+- `lib/brand/schema.ts` (BrandSpecSchema + schema-derived BrandSpec type)
+- `lib/brand/compile.ts` (compileBrandSpec -> { brandSpec, markdown, specHash })
+- `lib/brand/extract.ts`, `normalize.ts`, `hedge.ts`, `utils.ts`
+- `server/api` endpoints:
+  - `/api/supabase-ping`
+  - `/api/gemini-ping`
+  - `/api/waitlist`
+
+## CI
+The CI workflow runs typecheck, tests, and build on every push and pull request to ensure code quality and regression prevention.

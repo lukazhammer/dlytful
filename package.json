@@ -9,7 +9,10 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "typecheck": "nuxi typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -33,6 +36,7 @@
   "devDependencies": {
     "@nuxt/eslint": "^1.12.1",
     "@types/node": "^25.0.1",
-    "eslint": "^9.39.2"
+    "eslint": "^9.39.2",
+    "vitest": "^4.0.15"
   }
 }

@@ -1,147 +1,156 @@
-# dlytful Dev Log
+# DEVLOG
 
-## 0) Snapshot
-- Date: 2025-12-13
-- Current branch: Unknown (local workspace)
-- App status: Core flow functional (Landing -> Discovery -> Waitlist), but type safety and linting are not 100% clean.
-- Known blockers: None blocking execution, but "Supabase Client Type Mismatch" prevents clean `npx nuxi typecheck`.
+## 1) Product intent
+**dlytful** compiles raw founder inputs into a deterministic **BrandSpec** JSON + paste-ready markdown. No “creative” generation in the core path. Same inputs must yield the same outputs.
 
-## 1) Product Intent
-- **What dlytful is**: An automated brand positioning engine for developers who build functional apps but fail at storytelling.
-- **What it is not**: Not a GPT wrapper (uses structured extraction), not a chat UI (uses "Question Cards").
-- **Audience**: Technical founders, indie hackers, "build-first" developers.
-- **Core hook**: "Your app works. Your brand doesn't."
-- **Definition of a dlytful brand**: One that is Consistent (no franken-voice), Memorable (distinct archetype), and Machine Readable (exportable prompt).
+## 2) Non-negotiables
+- **Zero drift:** No reinterpretation of user intent. Extract, normalize, template.
+- **Deterministic:** Same input → identical BrandSpec + identical markdown (+ identical specHash).
+- **Strict schema:** Output must match `BrandSpecSchema` exactly (no extra keys).
+- **Fast path:** No external API calls required for core compilation.
 
-## 2) UX and Creative Direction
-- **Concept**: Tool Layer (floating glass panels) vs Environment Layer (parallax background).
-- **Narrative**: Journey from "Earth" (grounded, messy input) to "Sky" (clarity, high-level strategy).
-- **Solar Eclipse Motif**: Used as a progress indicator and "North Star" visual.
-- **Palette Tokens**: 
-  - Accent: `#C08A2B` (Amber/Gold)
-  - Ink: `#0B0F1A` (Deep Background)
-  - SkyTop: `#94A8C0`, SkyMid: `#6B7C90`, SkyDeep: `#1B2432`
-  - Cloud: `#E9ECF3`
-- **Rules**: 
-  - DO use monospaced fonts for labels/data. 
-  - AVOID blurred gradient orbs (overused AI trope). 
-  - AVOID standard "chat bubbles".
+## 3) Architecture snapshot
+Brand Compiler lives in `lib/brand` and is a standalone functional pipeline:
 
-## 3) Current Pages and Flows
-- **`/` (Landing)**
-  - Purpose: Convert visitors to waitlist or demo.
-  - Components: `EnvironmentLayer`, `ExampleOutputLoop` (hero widget).
-  - UX: "Join Waitlist" (email capture) + "Open live demo" link.
-  - Status: Functional.
-- **`/app` (Discovery)**
-  - Purpose: The main interactive tool.
-  - Components: `SplitPane`, `QuestionCard`, `ArchetypeWheel`, `BrandPromptPreview`.
-  - UX: 10-step wizard. Left side inputs, Right side real-time preview.
-  - Status: Functional.
-- **`/login`**
-  - Purpose: Supabase Auth entry point.
-  - Status: Exists, basic email login.
-- **`/pricing`**
-  - Purpose: Tier display (Free vs Pro).
-  - Status: Static page exists.
+1) **Input safety**
+- Accepts `Record<string, unknown>`
+- `asText` is strict: non-strings become `""` (prevents garbage like `"true"` from polluting spec fields)
 
-## 4) Data Model and Storage
-- **Tables**:
-  - `waitlist` (columns: `email`)
-  - `sprints` (columns: `user_id`, `inputs`, `current_step`, `unlocks`, `brand_prompt`)
-- **Type Source**: `app/types/database.types.ts` (Manually defined/Generated).
-- **RLS**: Row Level Security should be enabled on Supabase (users can only read/write their own sprints).
+2) **Extraction (`extract.ts`)**
+- [x] **Grammar Hardening**: Added `stripCalledSegment`, `stripProductName`, `ensureClause`, and `normalizeFragment` to ensure natural phrasing.
+- [x] **Robust Fallbacks**: Guaranteed non-empty assets for headlines, benefits, and differentiators even with empty/malformed inputs.
+- [x] **Smart Extraction**: Category extraction now intelligently removes "called X" leakage and self-referential product names.
+- [x] **Frontend Polish**: Hidden example fields (`archetype`, `mission`, `diff`, `banned words`) now correctly populated in `sanitizedInputs`.
+- [x] **Verification**: Added rigorous test suite for output quality, ensuring no empty strings and correct grammar structures.
 
-## 5) API Surface
-- **`/api/waitlist` (POST)**: 
-  - Input: `{ email: string }`. 
-  - Logic: `server/api/waitlist.post.ts`. Strict validation.
-  - Output: `{ ok: true }`.
-- **`/api/sprints` (POST)**:
-  - Input: `{ currentStep, inputs, unlocks, brandPrompt }`.
-  - Logic: `server/api/sprints/index.post.ts`.
-  - Output: `{ ok: true, sprint: SprintRow }`.
-- **`/api/brand/compile` (POST)**:
-  - Input: `{ inputs: Record<string, unknown> }`.
-  - Logic: `server/api/brand/compile.post.ts` -> `lib/brand/compile.ts`.
-  - Output: `{ markdown: string, brandSpec: BrandSpec }`.
-- **`/api/supabase-ping` (GET)**:
-  - Input: None.
-  - Logic: Uses `server/lib/env.ts` to check vars.
-  - Output: `{ ok: true, checks: { url: bool, key: bool } }`.
-- **`/api/gemini-ping` (GET)**:
-  - Input: None.
-  - Logic: Checks API key + generic model availability.
-  - Output: `{ ok: true, model: string }`.
-- **Other**:
-  - `/api/sys/health` (System status)
-  - `/api/gemini-models` (List models)
-  - `/api/generate/enhance` (AI rewrite of inputs)
-  - `/api/generate/archetype-recommend` (AI suggestion)
+## Phase 31: Demo Architecture Fix & UI Upgrade
+- [x] **Architecture Split**: Separated `assets` from strict `BrandSpecSchema` to prevent validation errors while enabling rich creative output.
+- [x] **UI Upgrade**: Added visible Differentiation, Archetype, and Tone inputs to the demo interface.
+- [x] **New Endpoints**: Created `/api/copy` for cached, LLM-generated creative assets.
+- [x] **Strict Determinism**: Verified `compile` remains purely deterministic; LLM layer is additive and cached.
+- [x] **Tests**: Updated test suite to verify the new split architecture and strict schema compliance.
 
-## 6) Brand Compiler Engine
-- **Logic Path**: `lib/brand/compile.ts` is the orchestrator.
-- **Components**:
-  - `extract.ts`: Deterministic regex/string extraction.
-  - `hedge.ts`: Removes "AI slop" words (hedging).
-  - `normalize.ts`: Cleans text.
-  - `templates.ts`: Markdown structures.
-  - `brandSpec.ts`: TypeScript interfaces.
-- **Strategy**: Deterministic first. AI is only used to *enhance* inputs, not to generate the core brand logic, ensuring consistency.
-- **Failure Modes**: Missing `inputs` keys might result in "[Undefined]" strings in output.
+3) **Normalization (`normalize.ts`, `hedge.ts`)**
+- Punctuation normalization is deterministic (e.g. em dash → comma)
+- Hedge removal is conservative (removed destructive tokens like `like` / `literally`) and regex inputs are escaped
 
-## 7) Configuration and Environment
-- **Env Helper**: `server/lib/env.ts` (exported as `getEnv`). enforces strictness.
-- **Required Vars**:
-  - `NUXT_PUBLIC_SUPABASE_URL`
-  - `NUXT_PUBLIC_SUPABASE_ANON_KEY`
-  - `GEMINI_API_KEY`
-  - `RESEND_API_KEY` (Not currently used in logic but listed in .env.example)
-- **Validation**: `npm run dev` will fail at runtime if `getEnv` is called for a missing key.
+4) **Compilation (`compile.ts`)**
+- Maps extracted values into strict `BrandSpec` shape
+- Uses deterministic utilities (e.g. `dedupePreserveOrder`, `ensureLen`)
+- Enforces required array lengths via deterministic padding/truncation (no alphabetical sorting that changes meaning)
 
-## 8) Quality Gate Results
-- **Typecheck (`npx nuxi typecheck`)**: **FAIL** (8 errors).
-  - Mostly `Type mismatch` in Supabase `insert()` calls due to complex generic inference.
-- **Lint (`npm run lint`)**: **FAIL** (1 error).
-  - `server/lib/env.ts`: `config` is assigned but never used.
-- **Lint Fix**: `npm run lint:fix` was run, cleared most issues.
+5) **Validation (`schema.ts`)**
+- `BrandSpecSchema` enforces strict shape (extra keys rejected)
+- Word-limit refinements are enforced where defined (deterministic checks)
 
-## 9) Critical Fixes Completed Today
-- **Strict Waitlist API**:
-  - Rewrote `server/api/waitlist.post.ts`.
-  - Removed all `any` casts.
-  - Added `isRecord` and `toEmail` validation helpers.
-- **Config Hardening**:
-  - Created `server/lib/env.ts`.
-  - Refactored `gemini-ping` and `supabase-ping` to use it.
-  - Updated `.env.example`.
-- **Lint Stabilization**:
-  - Fixed unused vars in `QuestionCard.vue`, `BrandPromptPreview.vue`.
-  - Fixed `auth.ts` `any` types.
+6) **Output**
+- Returns `{ brandSpec, markdown, specHash }`
+- `specHash` is SHA-256 of stable-stringified BrandSpec (drift detection)
 
-## 10) Known Bugs and TODOs
-- **[Medium] Lint Error in env.ts**: 
-  - Symptom: `config` unused var.
-  - Fix: Remove the `try/catch` block or the variable declaration in `server/lib/env.ts`.
-- **[High] Supabase Type Mismatch**:
-  - Symptom: `Argument of type ... is not assignable to parameter of type 'never'`.
-  - Cause: `@nuxtjs/supabase` client generic does not perfectly map to `database.types.ts` generated structure in strict mode.
-  - Fix: Re-generate types or create a wrapper helper for `insert` that casts strictly.
-- **[Medium] Unused "Resend" Key**:
-  - Symptom: `.env.example` lists `RESEND_API_KEY`, but no code uses it yet.
-  - Fix: Implement email sending or remove key.
+### Key files
+- `lib/brand/schema.ts` — single source of truth (Zod schema + schema-derived BrandSpec type)
+- `lib/brand/compile.ts` — compiler orchestrator
+- `lib/brand/extract.ts` — extraction rules (semantic safety included)
+- `lib/brand/normalize.ts` — normalization helpers (name + banned words)
+- `lib/brand/hedge.ts` — punctuation + hedge normalization
+- `lib/brand/utils.ts` — deterministic shared utilities
 
-## 11) Tomorrow Plan
-1.  **Fix Lint Error**: Open `server/lib/env.ts`, remove unused `config`. Run `npm run lint`.
-2.  **Fix Supabase Types**: Open `server/api/waitlist.post.ts` (and others), investigate `database.types.ts` alignment or add `as unknown as ...` cast with specific comment if inference fails.
-3.  **Verify Demo Flow**: Open `app/pages/app/index.vue`, run through full wizard to ensure no regression from strict types.
-4.  **Connect Sprints API**: Verify `server/api/sprints/index.post.ts` is actually called by the frontend (currently maybe checking `useDiscoveryStore`).
-5.  **Release Prep**: Run `npm run build` locally to verify production build.
+## 4) System guarantees (enforced by tests + CI)
+- **Schema compliance:** output always passes strict schema validation and contains no unknown keys
+- **Determinism:** repeated compilation of the same fixture yields identical BrandSpec, markdown, and specHash (stress-test loop)
+- **Priority-preserving order:** arrays preserve intentional priority order (no alphabetical “cleanup”)
+- **Input resilience:** null/undefined/non-string inputs cannot crash compilation and are normalized safely
 
-## 12) Handoff Notes
-- **Start Here**: Run `npm run dev`, then check `http://localhost:3000/api/sys/health` to confirm config.
-- **Constraints**: No em dashes. No "AI" prefix in UI copy. No Chat UI.
-- **Glossary**:
-  - *Sprint*: A user's session of defining a brand.
-  - *Archetype*: The psycho-demographic persona (e.g. "The Creator").
-  - *Brand Prompt*: The final markdown output meant for LLMs.
+## 5) Endpoints + data model (current)
+### Endpoints
+| Route | Method | Purpose | Auth |
+| --- | --- | --- | --- |
+| `/api/supabase-ping` | GET | Verify DB connection | None |
+| `/api/gemini-ping` | GET | Verify Gemini API & model | None |
+| `/api/waitlist` | POST | Capture emails `{ email }` | None |
+
+### Tables
+**waitlist**
+- `id` (uuid, pk)
+- `created_at` (timestamptz)
+- `email` (text, unique)
+
+**sprints**
+- `id` (uuid, pk)
+- `created_at` (timestamptz)
+- `user_id` (uuid, fk)
+- `inputs` (jsonb)
+- `current_step` (int4)
+- `unlocks` (jsonb)
+- `brand_prompt` (text)
+
+## 6) Changelog
+
+### 2025-12-14
+**Infra + endpoints**
+- Fixed unused config lint in `server/lib/env.ts`
+- Fixed Supabase insert/upsert typing issues for waitlist/sprints endpoints
+- Updated env handling for standard `SUPABASE_URL`
+- Verified: `npm run typecheck`, `supabase-ping`, `gemini-ping`
+- Added CI workflow (`.github/workflows/ci.yml`) running typecheck, tests, build
+
+**Deterministic compiler**
+- Added Vitest suite under `test/` with fixtures, determinism checks, and snapshots
+- Added stress-test loop to guarantee idempotency (bit-perfect output)
+- Centralized deterministic helpers in `lib/brand/utils.ts` (`dedupePreserveOrder`, etc.)
+- Added `ensureLen` to guarantee exact schema array lengths deterministically
+- Removed meaning-destroying alphabetical sorting (priority order preserved)
+- Enforced strict schema parsing and schema-derived BrandSpec typing (single source of truth)
+
+**Semantic safety + normalization**
+- Scoped hedge removal away from identity fields (name/category)
+- Hardened hedge logic: removed destructive hedge tokens and escaped regex inputs
+- Improved product name extraction:
+  - `extractCalledName` is case-insensitive
+  - stops at hard-stop phrases (`is a`, `for`, `with`, etc.)
+  - strips quotes deterministically and caps word count
+- Added `specHash` (SHA-256 of stable BrandSpec JSON) and verified it in tests
+
+## 7) Next actions
+- **Frontend integration:** connect UI to `{ brandSpec, markdown, specHash }`
+- **Results view:** render markdown + design tokens cleanly (avoid “nice looking” drift)
+- **E2E:** verify full flow Form → compile → Results page
+
+### 2025-12-14 (Realignment)
+**Zero Demo Rebuild**
+- **Frontend Refactor**: Split-screen, progressive unlock UI.
+  - Q1: Product -> Identity (Deterministic).
+  - Q2: Moment -> Voice/Palette (LLM, cached).
+  - Q3: Context -> Visuals.
+- **Backend Architecture**:
+  - `input_hash`: Added column and logic for stable input hashing `sha256(stableStringify({q1, q2, q3}))`.
+  - `/api/generate/zero`: New hybrid endpoint. Checks DB cache for authenticated users.
+  - **Palette System**: Added `CURATED_PALETTES` (8 options). LLM selects ID, backend applies tokens.
+  - **Determinism**: Baseline is 100% deterministic. LLM layer is cached per `(user_id, input_hash)`.
+- **Copy Quality**:
+  - Validated "For X, Y is the Z..." grammar.
+  - Removed "called X" leakage.
+  - Ensured "It works..." clause structure.
+- **Tests**:
+  - Added `test/zero_demo.test.ts` covering grammar, palette fallback, and hashing stability.
+
+
+### 2025-12-15
+**Fixing "Sameness" + Positioning Guardrails**
+- **Bug Fix**: Addressed "Sameness" bug where UI looked identical across inputs.
+  - Root: Frontend parallel race condition (positioning called before name inferred) + weak name inference on visuals.
+  - Fix: Enforced sequential API calls (`Demo` -> wait -> `Positioning`) in `demo.vue`.
+  - Fix: Hardened `inferProductName` to ignore visual descriptors (Q3) unless explicit "called X" markers exist.
+- **Positioning Generator**:
+  - New Endpoint: `/api/generate/positioning` with strict Zod schema.
+  - **Guardrails**: Banned buzzwords ("synergy", "cutting-edge"), enforced "For X, Y is Z..." template.
+  - **Repair Loop**: Backend retries generation up to 2x with specific validation errors (e.g. "Audience too broad") before falling back to deterministic template.
+  - **Safety**: Heuristic injection checks + banned category filters (weapons, medical).
+- **Demo UI**:
+  - Added hidden Debug Panel (toggle in top-left) for inspecting raw LLM output + model stats.
+  - "Premium" features (Archetype/Palette) shown as "LOCKED" to drive conversion, but fully rendered.
+
+**Tomorrow Handoff**:
+- [ ] **Inference Regression**: Test 20+ "noisy" inputs (e.g. "Red App") to ensure name isn't hallucinated.
+- [ ] **Injection Hardening**: Verify `INJECTION_PHRASES` against known jailbreaks.
+- [ ] **Quality Scoring**: Implement 1-10 scoring for positioning specificity beyond binary Pass/Fail.

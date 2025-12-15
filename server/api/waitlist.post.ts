@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
 
     const { error } = await client
         .from('waitlist')
-        .upsert(payload, { onConflict: 'email' })
+        .upsert(payload as never, { onConflict: 'email' })
 
     if (error) return handleSupabaseError(error)
 

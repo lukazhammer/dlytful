@@ -7,16 +7,20 @@ export const HEDGES = [
     "i guess",
     "unsure",
     "sort of",
-    "literally",
-    "essentially",
-    "like"
+    "essentially"
 ];
+
+function escapeRegex(string: string): string {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 export function removeHedges(s: string): string {
     if (!s) return "";
     let clean = s;
     for (const hedge of HEDGES) {
-        const regex = new RegExp(`\\b${hedge}\\b`, 'gi');
+        // Safe regex construction
+        const safeHedge = escapeRegex(hedge);
+        const regex = new RegExp(`\\b${safeHedge}\\b`, 'gi');
         clean = clean.replace(regex, "");
     }
     // Collapse whitespace

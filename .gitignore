@@ -26,3 +26,25 @@ logs
 # Ignored Docs files
 dlytful-docs/java*
 dlytful-docs/*.zip
+# Vercel
+.vercel
+# Testing & CI Artifacts
+coverage/
+playwright-report/
+test-results/
+junit.xml
+# Supabase (Local CLI state)
+supabase/.temp/
+supabase/.branches/
+# Secrets & Keys (Safety Net)
+*.pem
+*.key
+*.p12
+*.crt
+id_rsa
+id_rsa.pub
+# OS & Editor Trash
+Thumbs.db
+.vscode/
+!.vscode/extensions.json
+!.vscode/launch.json

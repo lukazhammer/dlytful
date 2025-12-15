@@ -1,0 +1,10 @@
+<svg width="1440" height="400" viewBox="0 0 1440 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!-- Distant Mountains/Hills -->
+<path d="M0 250L150 180L300 250H0Z" fill="#151515"/>
+<path d="M250 250L450 150L650 250H250Z" fill="#151515"/>
+<path d="M600 250L800 190L1000 250H600Z" fill="#151515"/>
+<path d="M900 250L1150 140L1440 250H900Z" fill="#151515"/>
+<!-- Shadow bands -->
+<path d="M150 180L300 250H200L150 180Z" fill="#0A0A0A"/>
+<path d="M450 150L650 250H550L450 150Z" fill="#0A0A0A"/>
+</svg>

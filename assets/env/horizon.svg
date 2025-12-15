@@ -1,0 +1,9 @@
+<svg width="1440" height="500" viewBox="0 0 1440 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Horizon Bands -->
+  <rect y="200" width="1440" height="300" fill="#151515"/>
+  <rect y="200" width="1440" height="20" fill="#202020"/>
+  
+  <!-- Distant Shapes -->
+  <path d="M200 200 L250 180 L300 200 Z" fill="#202020"/>
+  <path d="M1100 200 L1180 170 L1260 200 Z" fill="#202020"/>
+</svg>

@@ -1,0 +1,8 @@
+<svg width="1440" height="600" viewBox="0 0 1440 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!-- Flat Cloud Shapes - Primary -->
+<path d="M100 300C130 300 150 280 180 280C210 280 240 310 280 310H100V300Z" fill="#2A2A2A"/>
+<path d="M800 250C850 250 880 220 930 220C980 220 1020 260 1080 260H800V250Z" fill="#2A2A2A"/>
+<!-- Shadow Tone -->
+<path d="M100 310H280V315H100V310Z" fill="#1A1A1A"/>
+<path d="M800 260H1080V270H800V260Z" fill="#1A1A1A"/>
+</svg>

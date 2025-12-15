@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'GeistMono';
+  src: url('/fonts/GeistMono-VariableFont_wght.ttf') format('truetype');
+}
+
+:root {
+  --accent: #C08A2B;
+  --umber: #6A4A2D;
+  --ink: #0B0F1A;
+  --skyTop: #94A8C0;
+  --skyMid: #6B7C90;
+  --skyDeep: #1B2432;
+  --cloud: #E9ECF3;
+  --cloudShadow: rgba(0, 0, 0, 0.18);
+  --groundFar: #1C2D42;
+  --groundNear: #142235;
+}
+
+@keyframes drift {
+  0% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(20px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@layer base {
+  body {
+    background-color: var(--ink);
+    color: var(--cloud);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+}

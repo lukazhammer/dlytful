@@ -1,0 +1,17 @@
+<svg width="1440" height="600" viewBox="0 0 1440 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Flat Clouds: Simple Shapes with 2 tones (Fill + Shadow) -->
+  <g opacity="0.3">
+    <!-- Cloud 1 Left -->
+    <path d="M100 200 H300 V240 H100 Z" fill="#303030"/> 
+    <!-- Cloud 1 Shadow -->
+    <path d="M120 230 H280 V240 H120 Z" fill="#202020"/> 
+
+    <!-- Cloud 2 Right -->
+    <path d="M1000 150 H1250 V200 H1000 Z" fill="#303030"/>
+    <path d="M1020 190 H1230 V200 H1020 Z" fill="#202020"/>
+
+    <!-- Cloud 3 Center Low -->
+    <path d="M500 300 H800 V350 H500 Z" fill="#303030"/>
+    <path d="M520 340 H780 V350 H520 Z" fill="#202020"/>
+  </g>
+</svg>

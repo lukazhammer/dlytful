@@ -3,6 +3,14 @@ import { getEnv } from '../lib/env';
 import { serverSupabaseClient } from '#supabase/server';
 import type { Database } from '~/types/database.types';
 import type { BrandSpec } from '../../lib/brand/schema';
+import { mixToneSheets } from '../../lib/brand/tone/mixToneSheets';
+import type { ToneStyleSheet } from '../../lib/brand/tone/schema';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Load Tone Fixtures (Cached)
+const tonesPath = path.resolve(process.cwd(), 'tests/tone_style_sheets.v1.json');
+const allTones: ToneStyleSheet[] = JSON.parse(fs.readFileSync(tonesPath, 'utf-8'));
 
 // Helper: Word limit truncation
 const limitWords = (s: string, n: number) => s.trim().split(/\s+/).slice(0, n).join(" ");
@@ -36,6 +44,16 @@ export default defineEventHandler(async (event) => {
         generationConfig: { responseMimeType: "application/json" }
     });
 
+    // 3. Resolve Tone Mix
+    // For now, map Archetype to a primary tone, or default to Creator
+    // Ideally, UI sends weights. Here we derive strictness from Archetype.
+    let baseId = 'creator';
+    if (brandSpec.archetypePrimary === 'The Sage') baseId = 'sage';
+    if (brandSpec.archetypePrimary === 'The Jester') baseId = 'jester';
+
+    const baseTone = allTones.find(t => t.id === baseId) || allTones[0];
+    const mixedSpec = mixToneSheets([baseTone], [1.0]);
+
     const prompt = `
 You are a world-class copywriter and brand strategist.
 Create a set of deployable copy assets for the following brand.
@@ -47,6 +65,11 @@ Audience: ${brandSpec.audience}
 Outcome: ${brandSpec.outcome}
 Tone: ${brandSpec.voice.soundsLike.join(', ')} (Never ${brandSpec.voice.neverLike.join(', ')})
 Archetype: ${brandSpec.archetypePrimary}
+
+STYLE INSTRUCTIONS:
+${mixedSpec.instructions.map(i => `- ${i}`).join('\n')}
+Banned Words: ${mixedSpec.lexicon.banned.join(', ')}
+Preferred Words: ${mixedSpec.lexicon.preferred.join(', ')}
 
 REQUIREMENTS:
 Return a JSON object with strictly these keys and constraints:
@@ -89,7 +112,7 @@ Output valid JSON only.
             spec_hash: specHash,
             assets: assets as any, // Cast for JSONB
             model_used: 'gemini-1.5-flash-latest'
-        });
+        }) as any;
 
         return { assets, cached: false };
 

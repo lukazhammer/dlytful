@@ -12,7 +12,8 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "nuxi typecheck",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "brand:matrix": "npx tsx scripts/runBrandQualityMatrix.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -37,6 +38,7 @@
     "@nuxt/eslint": "^1.12.1",
     "@types/node": "^25.0.1",
     "eslint": "^9.39.2",
+    "playwright": "^1.57.0",
     "vitest": "^4.0.15"
   }
 }

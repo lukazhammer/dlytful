@@ -67,6 +67,29 @@ export interface Database {
                     input_hash?: string
                 }
             }
+            copy_cache: {
+                Row: {
+                    id: string
+                    created_at: string
+                    spec_hash: string
+                    assets: Json
+                    model_used: string
+                }
+                Insert: {
+                    id?: string
+                    created_at?: string
+                    spec_hash: string
+                    assets: Json
+                    model_used: string
+                }
+                Update: {
+                    id?: string
+                    created_at?: string
+                    spec_hash?: string
+                    assets?: Json
+                    model_used?: string
+                }
+            }
         }
     }
 }

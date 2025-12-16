@@ -159,76 +159,21 @@ The demo is intentionally **not** purely deterministic. It is a controlled hybri
 ---
 
 ### 2025-12-15
-**Zero pipeline hardening (what actually fixed quality)**
-- Migrated from “hard determinism everywhere” to **hybrid**:
-  - LLM generates *specific* content (one-liners, headlines, archetype/palette selection)
-  - Compiler guarantees shape + sanitation
-- Added “LLM HIT” visibility during testing to verify the LLM path is being used.
-- Fixed “UI looks identical” issue by ensuring remix truly changes assignments and UI is not dominated by fallback copy.
+**Fixing "Sameness" + Positioning Guardrails**
+- **Bug Fix**: Addressed "Sameness" bug where UI looked identical across inputs.
+  - Root: Frontend parallel race condition (positioning called before name inferred) + weak name inference on visuals.
+  - Fix: Enforced sequential API calls (`Demo` -> wait -> `Positioning`) in `demo.vue`.
+  - Fix: Hardened `inferProductName` to ignore visual descriptors (Q3) unless explicit "called X" markers exist.
+- **Positioning Generator**:
+  - New Endpoint: `/api/generate/positioning` with strict Zod schema.
+  - **Guardrails**: Banned buzzwords ("synergy", "cutting-edge"), enforced "For X, Y is Z..." template.
+  - **Repair Loop**: Backend retries generation up to 2x with specific validation errors (e.g. "Audience too broad") before falling back to deterministic template.
+  - **Safety**: Heuristic injection checks + banned category filters (weapons, medical).
+- **Demo UI**:
+  - Added hidden Debug Panel (toggle in top-left) for inspecting raw LLM output + model stats.
+  - "Premium" features (Archetype/Palette) shown as "LOCKED" to drive conversion, but fully rendered.
 
-**Remix behavior (conversion-driven)**
-- Remix now produces a new **randomized** archetype + tone + palette combination.
-- Locked controls (archetype/palette/tone selection) display as disabled with microcopy (“unlock with paid subscription”) while still rendering the assigned result.
-
-**Name inference**
-- Improved name inference to consider all fields (q1/q2/q3), not just Product field.
-- Goal: product name should be captured even if introduced only in the “Moment”.
-
-**One-liner generation**
-- Stopped forcing early over-guardrailed deterministic one-liners that produced boilerplate.
-- Let Gemini generate one-liners using a clear marketing brief.
-- Result: outputs began matching “expert brand strategist” expectations (short, punchy, customer-win framing).
-
-**Palette behavior**
-- Visual input now influences palette selection effectively when explicit color cues exist.
-- Remaining gap: semantic mapping (e.g. “BBQ colors”) should produce BBQ-associated palettes even without explicit hex or color words.
-
-**Positioning generator**
-- Added `/api/generate/positioning` endpoint with strict Zod schema output.
-- Implemented:
-  - banned buzzwords list
-  - generic phrase avoidance
-  - mechanism requirement in RTB
-  - template enforcement (“For X, Y is the Z that… because…”)
-  - repair loop across models (2.5 flash → 2.5 pro → 1.5 flash fallback)
-- Debug includes: llmAttempts, model used, validation issues, rawText snippet.
-
-**Debugging approach that worked**
-- Confirmed success/failure via DevTools Network Response JSON, not UI assumptions.
-- Captured and surfaced the actual LLM response and validation decisions.
-- Resolved “positioning not working” confusion by verifying endpoint returned valid JSON even when UI wasn’t rendering it yet.
-
----
-
-## 7) Current state (end of day)
-- Remix reliably changes archetype/tone/palette.
-- One-liner generation produces high-quality results when LLM path is active.
-- Positioning endpoint returns valid structured drafts; UI can render it.
-- Deterministic core remains intact and testable.
-
----
-
-## 8) Next actions
-### Highest priority
-- **Semantic palette mapping:** if q3 contains vibes like “BBQ / smokey / rust / cast iron”, infer an appropriate palette (not random cool blues).
-- **Name inference stress-test:** run 100 noisy variants (names embedded in any field; “called X”; parentheses; CamelCase; quoted names).
-- **Injection hardening:** expand `INJECTION_PHRASES` and add “ignore prior instructions” / “system prompt” detection to all LLM endpoints.
-- **Positioning quality scoring:** add a 1–10 rubric (specificity, differentiation clarity, proof concreteness) beyond pass/fail.
-
-### Nice-to-have
-- Add a “Debug” toggle in UI that shows:
-  - inferred name + confidence
-  - palette rationale
-  - model/attempts
-  - validator failures (if any)
-- Add a `tests/quality_matrix` runner to generate 100+ cases and track pass-rate.
-
----
-
-## 9) Handoff notes
-- If UI looks “same” again, do not guess. Check:
-  1) Network Response JSON (is the LLM being used?)
-  2) debug payload (issues / rawText)
-  3) caching (input_hash + remix_nonce)
-  4) frontend hardcoded defaults (payload skew)
-  5) validation thresholds (too strict → fallback spam)
+**Tomorrow Handoff**:
+- [ ] **Inference Regression**: Test 20+ "noisy" inputs (e.g. "Red App") to ensure name isn't hallucinated.
+- [ ] **Injection Hardening**: Verify `INJECTION_PHRASES` against known jailbreaks.
+- [ ] **Quality Scoring**: Implement 1-10 scoring for positioning specificity beyond binary Pass/Fail.

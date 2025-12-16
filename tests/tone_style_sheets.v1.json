@@ -1,0 +1,410 @@
+[
+    {
+        "id": "sage",
+        "name": "The Sage",
+        "sliders": {
+            "formality": 0.9,
+            "authority": 0.8
+        },
+        "sentence_rules": {
+            "avg_words": 15,
+            "max_words": 25,
+            "max_clauses": 3
+        },
+        "paragraph_rules": {
+            "max_sentences": 4,
+            "prefer_lists": "medium",
+            "prefer_headings": "high"
+        },
+        "rhythm": {
+            "questions_per_100": 5,
+            "exclamations_per_100": 0
+        },
+        "lexicon": {
+            "preferred_verbs": [
+                "analyze",
+                "verify",
+                "deduce"
+            ],
+            "preferred_phrases": [
+                "logic dictates",
+                "proof shows"
+            ],
+            "banned_words": [
+                "stuff",
+                "thing",
+                "cool",
+                "awesome"
+            ],
+            "banned_phrases": [
+                "game changer",
+                "next level",
+                "no brainer"
+            ]
+        },
+        "stance": {
+            "hedging": "medium",
+            "evidence_requirement": "required",
+            "claims": "measured"
+        },
+        "micro_style": {
+            "contractions": "no",
+            "emojis": "never",
+            "numbers": "avoid",
+            "passive_voice": "allow"
+        }
+    },
+    {
+        "id": "creator",
+        "name": "The Creator",
+        "sliders": {
+            "formality": 0.4,
+            "authority": 0.6
+        },
+        "sentence_rules": {
+            "avg_words": 10,
+            "max_words": 18,
+            "max_clauses": 2
+        },
+        "paragraph_rules": {
+            "max_sentences": 3,
+            "prefer_lists": "high",
+            "prefer_headings": "low"
+        },
+        "rhythm": {
+            "questions_per_100": 15,
+            "exclamations_per_100": 5
+        },
+        "lexicon": {
+            "preferred_verbs": [
+                "craft",
+                "build",
+                "design",
+                "make"
+            ],
+            "preferred_phrases": [
+                "by design",
+                "from scratch"
+            ],
+            "banned_words": [
+                "utilize",
+                "leverage",
+                "synergy"
+            ],
+            "banned_phrases": [
+                "best in class",
+                "state of the art"
+            ]
+        },
+        "stance": {
+            "hedging": "low",
+            "evidence_requirement": "preferred",
+            "claims": "confident"
+        },
+        "micro_style": {
+            "contractions": "yes",
+            "emojis": "rare",
+            "numbers": "use",
+            "passive_voice": "avoid"
+        }
+    },
+    {
+        "id": "jester",
+        "name": "The Jester",
+        "sliders": {
+            "formality": 0.1,
+            "authority": 0.2
+        },
+        "sentence_rules": {
+            "avg_words": 8,
+            "max_words": 15,
+            "max_clauses": 2
+        },
+        "paragraph_rules": {
+            "max_sentences": 2,
+            "prefer_lists": "low",
+            "prefer_headings": "low"
+        },
+        "rhythm": {
+            "questions_per_100": 25,
+            "exclamations_per_100": 15
+        },
+        "lexicon": {
+            "preferred_verbs": [
+                "play",
+                "pop",
+                "wild"
+            ],
+            "preferred_phrases": [
+                "just for fun",
+                "why not"
+            ],
+            "banned_words": [
+                "furthermore",
+                "however",
+                "consequently"
+            ],
+            "banned_phrases": [
+                "we regret to inform",
+                "as per your request"
+            ]
+        },
+        "stance": {
+            "hedging": "low",
+            "evidence_requirement": "optional",
+            "claims": "strong"
+        },
+        "micro_style": {
+            "contractions": "yes",
+            "emojis": "frequent",
+            "numbers": "use",
+            "passive_voice": "avoid"
+        }
+    },
+    {
+        "id": "professional",
+        "name": "Professional",
+        "sliders": {
+            "formality": 0.8,
+            "authority": 0.7
+        },
+        "sentence_rules": {
+            "avg_words": 14,
+            "max_words": 22,
+            "max_clauses": 3
+        },
+        "paragraph_rules": {
+            "max_sentences": 4,
+            "prefer_lists": "medium",
+            "prefer_headings": "medium"
+        },
+        "rhythm": {
+            "questions_per_100": 5,
+            "exclamations_per_100": 0
+        },
+        "lexicon": {
+            "preferred_verbs": [
+                "optimize",
+                "deliver",
+                "scale"
+            ],
+            "preferred_phrases": [
+                "industry standard",
+                "proven results"
+            ],
+            "banned_words": [
+                "dude",
+                "super",
+                "really"
+            ],
+            "banned_phrases": []
+        },
+        "stance": {
+            "hedging": "medium",
+            "evidence_requirement": "preferred",
+            "claims": "confident"
+        },
+        "micro_style": {
+            "contractions": "some",
+            "emojis": "never",
+            "numbers": "use",
+            "passive_voice": "allow"
+        }
+    },
+    {
+        "id": "empathetic",
+        "name": "Empathetic",
+        "sliders": {
+            "formality": 0.3,
+            "authority": 0.4
+        },
+        "sentence_rules": {
+            "avg_words": 12,
+            "max_words": 20,
+            "max_clauses": 2
+        },
+        "paragraph_rules": {
+            "max_sentences": 3,
+            "prefer_lists": "low",
+            "prefer_headings": "low"
+        },
+        "rhythm": {
+            "questions_per_100": 20,
+            "exclamations_per_100": 2
+        },
+        "lexicon": {
+            "preferred_verbs": [
+                "understand",
+                "help",
+                "feel"
+            ],
+            "preferred_phrases": [
+                "we hear you",
+                "you belong"
+            ],
+            "banned_words": [
+                "demand",
+                "require",
+                "mandatory"
+            ],
+            "banned_phrases": []
+        },
+        "stance": {
+            "hedging": "high",
+            "evidence_requirement": "optional",
+            "claims": "measured"
+        },
+        "micro_style": {
+            "contractions": "yes",
+            "emojis": "rare",
+            "numbers": "avoid",
+            "passive_voice": "avoid"
+        }
+    },
+    {
+        "id": "bold",
+        "name": "Bold",
+        "sliders": {
+            "formality": 0.5,
+            "authority": 0.9
+        },
+        "sentence_rules": {
+            "avg_words": 8,
+            "max_words": 14,
+            "max_clauses": 1
+        },
+        "paragraph_rules": {
+            "max_sentences": 2,
+            "prefer_lists": "low",
+            "prefer_headings": "high"
+        },
+        "rhythm": {
+            "questions_per_100": 10,
+            "exclamations_per_100": 5
+        },
+        "lexicon": {
+            "preferred_verbs": [
+                "dominate",
+                "win",
+                "lead"
+            ],
+            "preferred_phrases": [
+                "no excuses",
+                "take charge"
+            ],
+            "banned_words": [
+                "maybe",
+                "perhaps",
+                "try"
+            ],
+            "banned_phrases": [
+                "we believe",
+                "we think"
+            ]
+        },
+        "stance": {
+            "hedging": "none",
+            "evidence_requirement": "optional",
+            "claims": "strong"
+        },
+        "micro_style": {
+            "contractions": "yes",
+            "emojis": "never",
+            "numbers": "use",
+            "passive_voice": "avoid"
+        }
+    },
+    {
+        "id": "minimal",
+        "name": "Minimal",
+        "sliders": {
+            "formality": 0.6,
+            "authority": 0.6
+        },
+        "sentence_rules": {
+            "avg_words": 6,
+            "max_words": 12,
+            "max_clauses": 1
+        },
+        "paragraph_rules": {
+            "max_sentences": 2,
+            "prefer_lists": "low",
+            "prefer_headings": "low"
+        },
+        "rhythm": {
+            "questions_per_100": 5,
+            "exclamations_per_100": 0
+        },
+        "lexicon": {
+            "preferred_verbs": [],
+            "preferred_phrases": [],
+            "banned_words": [
+                "and",
+                "superfluous",
+                "very"
+            ],
+            "banned_phrases": []
+        },
+        "stance": {
+            "hedging": "none",
+            "evidence_requirement": "optional",
+            "claims": "measured"
+        },
+        "micro_style": {
+            "contractions": "yes",
+            "emojis": "never",
+            "numbers": "use",
+            "passive_voice": "avoid"
+        }
+    },
+    {
+        "id": "witty",
+        "name": "Witty",
+        "sliders": {
+            "formality": 0.3,
+            "authority": 0.5
+        },
+        "sentence_rules": {
+            "avg_words": 12,
+            "max_words": 20,
+            "max_clauses": 2
+        },
+        "paragraph_rules": {
+            "max_sentences": 3,
+            "prefer_lists": "low",
+            "prefer_headings": "low"
+        },
+        "rhythm": {
+            "questions_per_100": 15,
+            "exclamations_per_100": 8
+        },
+        "lexicon": {
+            "preferred_verbs": [
+                "wink",
+                "nudge",
+                "grin"
+            ],
+            "preferred_phrases": [
+                "pun intended",
+                "plot twist"
+            ],
+            "banned_words": [
+                "boring",
+                "standard",
+                "normal"
+            ],
+            "banned_phrases": []
+        },
+        "stance": {
+            "hedging": "low",
+            "evidence_requirement": "optional",
+            "claims": "confident"
+        },
+        "micro_style": {
+            "contractions": "yes",
+            "emojis": "some",
+            "numbers": "use",
+            "passive_voice": "avoid"
+        }
+    }
+]

@@ -71,6 +71,7 @@ function stableStringHash(str: string): number {
 }
 
 // --- SCHEMA ---
+// --- SCHEMA ---
 const ARCHETYPE_STYLES: Record<string, string> = {
     'The Hero': 'Direct, action-oriented, overcoming challenges, strength verbs.',
     'The Sage': 'Logical, clarity-first, definitions, objectivity, no fluff.',
@@ -92,23 +93,24 @@ const BodySchema = z.object({
     q3_url_or_desc: z.string().optional(),
     product_type: z.string().optional(),
     remix: z.boolean().optional(),
-    remix_nonce: z.string().optional(), // Client provided source of entropy
-    // Vibe Overrides
+    remix_nonce: z.string().optional(),
     tone_ids: z.array(z.string()).optional(),
     archetype: z.string().optional(),
     palette_id: z.string().optional()
 });
 
-function extractJsonObject(text: string): any {
-    try {
-        const match = text.match(/\{[\s\S]*\}/);
-        if (match) return JSON.parse(match[0]);
-    } catch (e) {
-        return null; // Silent fail
-    }
-    return null;
-}
+// Positioning Parts Validation Schema
+const PositioningPartsSchema = z.object({
+    target: z.string().min(3),
+    product: z.string().min(1),
+    category: z.string().min(3),
+    value: z.string().min(5),
+    alternative: z.string().min(3).optional(),
+    differentiator: z.string().min(5),
+    proof: z.string().min(5).refine(val => !val.toLowerCase().includes('generic'), { message: "Proof cannot be generic" })
+});
 
+import { renderPositioningDeclaration } from '../../utils/renderPositioning';
 
 // --- HANDLER ---
 
@@ -119,77 +121,42 @@ export default defineEventHandler(async (event) => {
     }
     const { q1_core_what, q2_moment, q3_url_or_desc, product_type, remix, remix_nonce } = bodyResult.data;
 
-    // 1. Name Inference
-    // --------------------------------------------------------------------------
-    const inferred = inferProductName({
-        q1: q1_core_what,
-        q2: q2_moment,
-        q3: q3_url_or_desc
-    });
-
-    // Naive heuristic check
+    const inferred = inferProductName({ q1: q1_core_what, q2: q2_moment, q3: q3_url_or_desc });
     let productName = inferred.confidence !== 'low' ? inferred.name : "Your Product";
-    // Fallback logic remains simple for now as per requirements.
-
-    const category = product_type || "Product"; // Simple fallback
-
-    // 2. Random Assignment (Seeded)
-    // --------------------------------------------------------------------------
-    // Seed depends on Inputs + Nonce. 
-    // If nonce changes, seed changes -> Assignments change.
+    const category = product_type || "Product";
     const entropySource = `${q1_core_what}${q2_moment}${q3_url_or_desc}${product_type}${remix_nonce}`;
     const seed = stableStringHash(entropySource);
 
-    // Determine Archetype
     const archetype = bodyResult.data.archetype || pickRandom(VALID_ARCHETYPES, seed);
-
-    // Determine Palette (Name/Tags logic or just ID)
-    // If palette_id is sent, we can try to find it in CURATED, or just use it as seed for consistency
     let palette = pickRandom(CURATED_PALETTES, seed + 1);
-    // If palette_id provided, finding by ID might be hard if we don't have IDs in CURATED_PALETTES or if it's just a seed
-    // For now we trust the random seed derived from inputs/nonce (which changes on Remix) handles palette variety sufficienty.
-    // If user specifically requested 'p1', we could look it up, but palette_id is mostly for cache determinism here.
 
-    // Determine Tones
     let selectedToneIds: string[] = [];
     let toneTags: string[] = [];
-
     if (bodyResult.data.tone_ids && bodyResult.data.tone_ids.length > 0) {
         selectedToneIds = bodyResult.data.tone_ids;
     } else {
-        // Fallback: Pick 3 random IDs from available tones
         const randomIds = pickRandomUnique(allTones.map(t => t.id), 3, seed + 2);
         selectedToneIds = randomIds;
     }
-
-    // Resolve Tone Objects and Names
     const selectedTones = selectedToneIds.map(id => allTones.find(t => t.id === id)).filter(Boolean) as ToneStyleSheet[];
-    // Fallback if some IDs invalid: fill with random? Or just use what we have.
-    if (selectedTones.length === 0) {
-        selectedTones.push(allTones[0]); // Default to first (Sage)
-    }
+    if (selectedTones.length === 0) selectedTones.push(allTones[0]);
     toneTags = selectedTones.map(t => t.name);
 
-    // MIX TONES
-    const mixedSpec = mixToneSheets(selectedTones, selectedTones.map(() => 1)); // Equal weights
-
-    // DETERMINISTIC PATTERNS
-    const posPattern = getPositioningPattern(archetype, seed);
+    const mixedSpec = mixToneSheets(selectedTones, selectedTones.map(() => 1));
     const headlineMoves = getHeadlineMoves(seed, 3);
 
-    // 3. Gemini Vibe Generation (High Temp + JSON)
-    // --------------------------------------------------------------------------
+    // Positioning logic handled by LLM now, so we removed old pattern fetching.
+
     const apiKey = getEnv('GEMINI_API_KEY');
     const genAI = new GoogleGenerativeAI(apiKey);
-
-    // Model Waterfall
     const MODELS_TO_TRY = ['gemini-2.5-latest', 'gemini-2.0-flash-exp', 'gemini-1.5-flash'];
 
-    // Default Fallbacks
     let vibeRes = {
         llmOneLiner: `${productName} helps users achieve their goals with a ${category}.`,
         llmHeadlines: [`The ${category} for users.`, `Achieve goals fast.`, `Stop struggling with ${category}.`],
-        llmPositioning: `${productName} is the ${category} that simply works. It is designed for efficiency.`,
+        llmPositioningParts: {
+            target: 'users', product: productName, category, value: 'works well', alternative: 'old tools', differentiator: 'is faster', proof: 'experience'
+        },
         llmOutcome: 'achieve their goals',
         llmProof: 'it just works',
         llmPalette: null as any
@@ -205,7 +172,7 @@ export default defineEventHandler(async (event) => {
 
     const prompt = `
     Role: Senior Brand Strategist.
-    Task: Generate a brand vibe for a new product.
+    Task: Generate a brand vibe and detailed positioning declaration for a new product.
     
     Inputs:
     Product: ${q1_core_what}
@@ -221,52 +188,41 @@ export default defineEventHandler(async (event) => {
     ${mixedSpec.instructions.map(i => `- ${i}`).join('\n')}
     - Banned Digits/Punctuation: ${mixedSpec.constraints.punctuation_bans.join(' ')} ${mixedSpec.constraints.allow_numbers ? '' : '0-9'}
     
-    STRICT STRUCTURE ENFORCEMENT (Mandatory):
-    1. Positioning: You MUST use this exact sentence structure (fill in the brackets):
-       Template: "${posPattern.template}"
-       Context: This fits the ${archetype} archetype (${posPattern.description}).
-    
-    2. Headlines: You MUST generate exactly 3 headlines following these specific moves:
-       - Headline 1 (${headlineMoves[0].name}): ${headlineMoves[0].instruction}
-       - Headline 2 (${headlineMoves[1].name}): ${headlineMoves[1].instruction}
-       - Headline 3 (${headlineMoves[2].name}): ${headlineMoves[2].instruction}
+    STRICT POSITIONING DECLARATION (Internal Spec, not tagline):
+    You must decompose the positioning into these parts:
+    - Target: Who is it for? (e.g. "DevOps engineers", not "You")
+    - Category: What is it? (e.g. "CI/CD pipeline")
+    - Value: What does it do? (e.g. "automates deployments")
+    - Alternative: What are they using now? (e.g. "manual scripts", "Jenkins")
+    - Differentiator: Why is this better? (e.g. "is 10x faster due to caching")
+    - Proof: Why believe it? (e.g. "used by Netflix", "zero-config architecture") -> MUST NOT BE GENERIC. Use inferred details.
+
+    STRICT HEADLINE RULES:
+    You MUST generate exactly 3 headlines following these specific moves:
+    - Headline 1 (${headlineMoves[0].name}): ${headlineMoves[0].instruction}
+    - Headline 2 (${headlineMoves[1].name}): ${headlineMoves[1].instruction}
+    - Headline 3 (${headlineMoves[2].name}): ${headlineMoves[2].instruction}
        
-       Constraints: 
-       - MAX 5 words per headline.
-       - Do not use the same first word for any of the headlines.
-       - Use at least one Preferred Vocabulary word in at least 2 headlines.
+    Constraints: 
+    - MAX 5 words per headline.
+    - Do not use the same first word for any of the headlines.
 
-    LEXICON RULES:
-    - BANNED WORDS/PHRASES (Do NOT use): ${mixedSpec.banned_lexicon.slice(0, 80).join(', ') || 'None'}
-    - PREFERRED VOCABULARY (Try to use): ${mixedSpec.preferred_lexicon.slice(0, 40).join(', ') || 'None'}
-
-    STYLE ENFORCEMENT:
-    1. If a banned word/phrase appears, REWRITE until it is gone.
-    2. Do not reuse previous sentence skeletons. Vary openings.
-    3. If "No contractions" is set, do not use them (e.g. use "do not" instead of "don't").
-
-    Output Format: JSON ONLY. No markdown blocks.
+    Output Format: JSON ONLY.
     Schema:
     {
-      "llmOneLiner": "string (12-20 words, action-oriented, customer-win focus, NO hype words)",
-      "llmHeadlines": ["string (max 5 words)", "string", "string"],
-      "llmPositioning": "string (2 sentences, clear value prop)",
-      "llmOutcome": "string (3-5 words, e.g. 'ships code faster')",
-      "llmProof": "string (5-10 words, e.g. 'of our automated pipeline')",
-      "llmPalette": { 
-          "accent": "#hex", 
-          "base": "#hex", 
-          "ink": "#hex", 
-          "font": "string (Inter|Outfit|Cormorant)", 
-          "radius": number (0, 0.5, 1) 
-      }
+      "llmOneLiner": "string (12-20 words, action-oriented, customer-win focus)",
+      "llmHeadlines": ["string", "string", "string"],
+      "llmPositioningParts": {
+        "target": "string",
+        "product": "string (${productName})",
+        "category": "string(noun)",
+        "value": "string (verb phrase)",
+        "alternative": "string (competitor/status quo)",
+        "differentiator": "string (comparative)",
+        "proof": "string (evidence)"
+      },
+      "llmPalette": { "accent": "#hex", "base": "#hex", "ink": "#hex", "font": "string", "radius": number }
     }
-
-    Guardrails:
-    - No "helps users" generic structure if possible. Be punchy.
-    - No medical cures or financial promises.
-    - Hex codes must be valid 6-char hex.
-    - Radius must be number.
     `;
 
     for (const modelName of MODELS_TO_TRY) {
@@ -281,56 +237,22 @@ export default defineEventHandler(async (event) => {
             const text = res.response.text().trim();
             rawTextPreview = text;
 
-            // Clean markdown tokens if any (sometimes model ignores JSON mode or it's not supported in older models)
             const jsonText = text.replace(/^```json|```$/g, '').trim();
             const parsed = JSON.parse(jsonText);
 
-            // Basic Validation
-            if (parsed.llmOneLiner && Array.isArray(parsed.llmHeadlines) && parsed.llmPalette?.accent) {
-
-                // --- STRICT REWRITE PASS ---
-                // Check for banned lexicon or punctuation
-                const bannedTerms = [...mixedSpec.banned_lexicon, ...mixedSpec.constraints.punctuation_bans];
-                if (!mixedSpec.constraints.allow_numbers) bannedTerms.push('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
-
-                const combinedText = (parsed.llmOneLiner + parsed.llmHeadlines.join(' ') + parsed.llmPositioning).toLowerCase();
-                const foundViolations = bannedTerms.filter(term => combinedText.includes(term.toLowerCase()));
-
-                if (foundViolations.length > 0) {
-                    // REWRITE LOOP (Attempt 1)
-                    console.log(`[Demo] Rewrite triggered. Violations: ${foundViolations.join(', ')}`);
-                    const rewritePrompt = `
-                        Original JSON: ${JSON.stringify(parsed)}
-                        
-                        VIOLATIONS FOUND: The text contained these banned terms/chars: ${foundViolations.join(', ')}.
-                        
-                        Task: HOSTILE REWRITE. Remove all banned terms. Enforce tone constraints harder.
-                        Preserve JSON schema. Return fixed JSON.
-                     `;
-
-                    const rewriteRes = await model.generateContent({
-                        contents: [{ role: 'user', parts: [{ text: rewritePrompt }] }],
-                        generationConfig: { temperature: 0.3 } // Lower temp for strict fix
-                    });
-                    const rewriteText = rewriteRes.response.text().replace(/^```json|```$/g, '').trim();
-                    const rewrittenParsed = JSON.parse(rewriteText);
-
-                    if (rewrittenParsed.llmOneLiner) {
-                        vibeRes = rewrittenParsed; // Accept rewrite
-                        fallbackReason = 'Rewritten';
-                    } else {
-                        vibeRes = parsed; // Keep original if rewrite broke schema
-                        fallbackReason = 'RewriteFailedSchema';
-                    }
-                } else {
-                    vibeRes = parsed; // All good
-                    fallbackReason = '';
+            if (parsed.llmPositioningParts) {
+                // Validate positioning decomposition
+                const posCheck = PositioningPartsSchema.safeParse(parsed.llmPositioningParts);
+                if (!posCheck.success) {
+                    throw new Error("Positioning parts validation failed: " + posCheck.error.message);
                 }
 
+                vibeRes = parsed;
+                fallbackReason = '';
                 llmOk = true;
                 break;
             } else {
-                fallbackReason = `Invalid JSON schema: ${text.slice(0, 50)}...`;
+                fallbackReason = `Invalid JSON schema: Missing positioning parts`;
             }
         } catch (e: any) {
             llmError += `[${modelName}: ${e.message}] `;
@@ -338,109 +260,45 @@ export default defineEventHandler(async (event) => {
         }
     }
 
-    // FINAL SAFETY NET: Blindly strip banned punctuation if it leaked through
+    // Safety Clean
     if (vibeRes.llmOneLiner) {
-        const stripRx = /[!—–]/g; // Exclamation, Em-dash, En-dash
+        const stripRx = /[!—–]/g;
         vibeRes.llmOneLiner = vibeRes.llmOneLiner.replace(stripRx, '.');
-        if (Array.isArray(vibeRes.llmHeadlines)) {
-            vibeRes.llmHeadlines = vibeRes.llmHeadlines.map(h => h.replace(stripRx, ''));
-        }
-        if (vibeRes.llmPositioning) {
-            vibeRes.llmPositioning = vibeRes.llmPositioning.replace(stripRx, '.');
-        }
+        if (Array.isArray(vibeRes.llmHeadlines)) vibeRes.llmHeadlines = vibeRes.llmHeadlines.map(h => h.replace(stripRx, ''));
     }
 
-    // Palette Resolution: Visuals override random picker IF LLM succeeded and q3 was provided
     if (llmOk && q3_url_or_desc && vibeRes.llmPalette) {
-        // Use LLM palette
-        // Validate hex
-        // Quick verify? simple assignment.
         const p = vibeRes.llmPalette;
         palette = {
-            id: 'llm-custom',
-            name: 'Custom Vibe',
-            accent: p.accent || palette.accent,
-            base: p.base || palette.base,
-            ink: p.ink || palette.ink,
-            font: p.font || palette.font,
-            radius: typeof p.radius === 'number' ? p.radius : palette.radius,
-            tags: ['custom', 'generated']
+            id: 'llm-custom', name: 'Custom Vibe',
+            accent: p.accent || palette.accent, base: p.base || palette.base, ink: p.ink || palette.ink,
+            font: p.font || palette.font, radius: typeof p.radius === 'number' ? p.radius : palette.radius,
+            tags: ['custom']
         };
     }
 
-    // 4. Response
-    // --------------------------------------------------------------------------
+    // Render positioning string using helper
+    const finalPositioning = renderPositioningDeclaration(vibeRes.llmPositioningParts);
 
-    // Generate Brand Prompt (Deterministic based on final outputs)
+    // Response Construction
     const brandPromptCtx = {
-        productName: productName,
-        category: category,
-        audience: 'Users', // Fallback
-        outcome: vibeRes.llmOutcome || 'Success',
-        proof: vibeRes.llmProof || '',
-        archetype: archetype,
-        toneTags: toneTags,
-        palette: palette,
-        assets: {
-            oneLiner: vibeRes.llmOneLiner || '',
-            positioning: vibeRes.llmPositioning || '',
-            headlines: Array.isArray(vibeRes.llmHeadlines) ? vibeRes.llmHeadlines : []
-        },
-        mixedSpec: mixedSpec
+        productName, category, audience: vibeRes.llmPositioningParts.target,
+        outcome: vibeRes.llmPositioningParts.value, proof: vibeRes.llmPositioningParts.proof,
+        archetype, toneTags, palette,
+        assets: { oneLiner: vibeRes.llmOneLiner || '', positioning: finalPositioning, headlines: vibeRes.llmHeadlines || [] },
+        mixedSpec
     };
-
     const brandPrompt = buildBrandPrompt(brandPromptCtx);
 
     return {
-        identity: {
-            productName: productName,
-            category: category,
-            outcome: vibeRes.llmOutcome,
-            proof: vibeRes.llmProof
-        },
-        vibe: {
-            archetype,
-            toneTags,
-            palette
-        },
-        copy: {
-            oneLiner: vibeRes.llmOneLiner,
-            headlines: vibeRes.llmHeadlines,
-            positioning: vibeRes.llmPositioning
-        },
-        brandPrompt: brandPrompt, // Legacy object
-        brandPromptMarkdown: brandPrompt.text, // Builder-Agnostic Markdown
-
-        // Legacy fields for frontend compat (if needed, but we updated frontend to use result.assets)
-        // demo.vue uses: result.brandSpec.productName, category, voice.soundsLike, designTokens...
-        // and result.assets.oneLiner...
-        // We handle mapping in frontend now or here?
-        // Frontend `demo.vue` maps: 
-        // res.identity -> brandSpec
-        // res.vibe -> brandSpec.voice/tokens
-        // res.oneLiner -> assets
-        // So I should KEEP legacy keys `oneLiner`, `headlines`, `positioning` at top level if frontend expects them.
-        // Yes, frontend uses `res.oneLiner`, `res.headlines`.
-        // I will keep them.
-
-        oneLiner: vibeRes.llmOneLiner,
-        headlines: vibeRes.llmHeadlines,
-        positioning: vibeRes.llmPositioning,
-
+        identity: { productName, category, outcome: vibeRes.llmPositioningParts.value, proof: vibeRes.llmPositioningParts.proof },
+        vibe: { archetype, toneTags, palette },
+        copy: { oneLiner: vibeRes.llmOneLiner, headlines: vibeRes.llmHeadlines, positioning: finalPositioning, positioningParts: vibeRes.llmPositioningParts },
+        brandPrompt, brandPromptMarkdown: brandPrompt.text,
+        oneLiner: vibeRes.llmOneLiner, headlines: vibeRes.llmHeadlines, positioning: finalPositioning,
         debug: {
-            endpointName: 'demo-v2',
-            model: usedModel,
-            remix: !!remix,
-            seed: seed,
-            llmOk,
-            llmError,
-            fallbackReason,
-            rawTextPreview: rawTextPreview.slice(0, 100),
-            promptChars: prompt.length,
-            inferredName: inferred.name,
-            inferredConfidence: inferred.confidence,
-            cacheHit: false, // Demo never caches
-            mixedSpec: mixedSpec // Proof of mixing
+            endpointName: 'demo-v2', model: usedModel, remix: !!remix, seed, llmOk, llmError, fallbackReason,
+            rawTextPreview: rawTextPreview.slice(0, 100), inferredName: inferred.name
         }
     };
 });

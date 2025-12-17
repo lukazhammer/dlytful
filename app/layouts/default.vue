@@ -4,9 +4,11 @@
     <div class="relative z-10 min-h-screen flex flex-col">
        <slot />
     </div>
+    <CookieBanner />
   </div>
 </template>
 
 <script setup>
 import EnvironmentLayer from '~/components/EnvironmentLayer.vue';
+import CookieBanner from '~/components/CookieBanner.vue';
 </script>

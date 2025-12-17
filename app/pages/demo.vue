@@ -146,7 +146,7 @@
                 </div>
 
                 <!-- Q2 (Progressive) -->
-                <div class="space-y-3 transition-all duration-500" :class="activeStep >= 1 ? 'opacity-100' : 'opacity-50 blur-[0.5px] pointer-events-none'">
+                <div class="space-y-3">
                     <label class="text-xs uppercase text-textMuted tracking-widest font-bold flex justify-between">
                         <span>2. The Moment</span>
                         <span v-if="activeStep < 1" class="text-textMuted/50 text-[10px]">Unlocks Voice</span>
@@ -163,7 +163,7 @@
                 </div>
 
                 <!-- Q3 (Progressive) -->
-                 <div class="space-y-3 transition-all duration-500" :class="activeStep >= 2 ? 'opacity-100' : 'opacity-50 blur-[0.5px] pointer-events-none'">
+                 <div class="space-y-3">
                     <label class="text-xs uppercase text-textMuted tracking-widest font-bold flex justify-between">
                         <span>3. Visuals (Optional)</span>
                         <span v-if="activeStep < 2" class="text-textMuted/50 text-[10px]">Unlocks Refinement</span>
@@ -323,13 +323,25 @@
                             </div>
                             <div class="h-px bg-white/5 w-full"></div>
                              <div class="space-y-2">
-                                <div class="text-[10px] text-textMuted uppercase tracking-wider">Positioning</div>
+                                <div class="text-[10px] text-textMuted uppercase tracking-wider">Positioning Declaration</div>
                                 <p class="text-sm text-textMuted leading-loose">
-                                    <span v-if="result.assets.positioning && result.assets.positioning.includes('For ')">
-                                        {{ result.assets.positioning }}
+                                    <span v-if="result.assets.positioningParts" class="space-y-2 block">
+                                         <span class="block">
+                                            For <strong class="text-text">{{ result.assets.positioningParts.target }}</strong>, 
+                                            <strong class="text-text">{{ result.brandSpec.productName }}</strong> is a 
+                                            <strong class="text-text">{{ result.assets.positioningParts.category }}</strong> that 
+                                            <strong class="text-text">{{ result.assets.positioningParts.value }}</strong>.
+                                         </span>
+                                         <span class="block">
+                                            Unlike <span class="text-text/70 border-b border-white/10">{{ result.assets.positioningParts.alternative || 'alternatives' }}</span>, 
+                                            it <strong class="text-text">{{ result.assets.positioningParts.differentiator }}</strong>.
+                                         </span>
+                                         <span class="block text-xs uppercase tracking-wider opacity-70 mt-4">
+                                            Proof: <span class="text-text italic">{{ result.assets.positioningParts.proof }}</span>
+                                         </span>
                                     </span>
                                     <span v-else>
-                                        For <span class="text-text">{{ result.brandSpec.audience }}</span>, {{ result.brandSpec.productName }} is the <span class="text-text">{{ result.brandSpec.category }}</span> that <span class="text-text">{{ result.brandSpec.outcome }}</span>. {{ result.brandSpec.proof }}.
+                                        {{ result.assets.positioning }}
                                     </span>
                                 </p>
                             </div>
@@ -615,10 +627,15 @@ const generateFull = async (isRemix = false) => {
             }, 
             assignment: {
                  // For compatibility if needed, but we used it for prevAssignment logic which is now obsolete
-                 designTokens: res.vibe.palette // For CSS vars
+                designTokens: res.vibe.palette // For CSS vars
             }
         };
-        
+
+        // Explicitly map positioningParts if present for the robust display
+        if (res.copy && res.copy.positioningParts) {
+             mappedResult.assets.positioningParts = res.copy.positioningParts;
+        }
+
         // Merge strategy: Replace result entirely
         result.value = mappedResult;
         
@@ -648,7 +665,7 @@ const generateFull = async (isRemix = false) => {
 // -- DEBOUNCED INPUT HANDLERS --
 
 const onInputQ1 = useDebounceFn(() => {
-    if (activeStep.value >= 1) compileBaseline();
+    compileBaseline();
 }, 500);
 
 const onInputQ2 = useDebounceFn(() => {

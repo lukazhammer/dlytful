@@ -1,58 +1,17 @@
 <template>
-  <div class="min-h-screen flex flex-col font-sans selection:bg-accent selection:text-black bg-background text-text">
+  <div class="min-h-screen flex flex-col font-sans selection:bg-[#C08A2B] selection:text-black bg-[#0B0F1A] text-[#E9ECF3] isolate">
     <main class="flex-grow flex flex-col lg:flex-row h-screen overflow-hidden">
       
       <!-- LEFT: Inputs (Scrollable) -->
-      <div class="w-full lg:w-1/2 flex flex-col p-6 lg:p-12 overflow-y-auto z-10 relative border-r border-white/5 bg-background">
+      <div class="w-full lg:w-1/2 flex flex-col p-6 lg:p-12 overflow-y-auto z-10 relative border-r border-[#7FA6D6]/10 bg-[#0B0F1A]">
         
         <!-- Debug Toggle (Dev Only) -->
-        <button @click="showDebug = !showDebug" class="absolute top-2 left-2 text-[10px] text-white/10 hover:text-white/50 uppercase tracking-widest font-mono z-50">
+        <button class="absolute top-2 left-2 text-[10px] text-[#7FA6D6]/20 hover:text-[#7FA6D6] uppercase tracking-widest font-mono z-50" @click="showDebug = !showDebug">
             {{ showDebug ? 'Hide Debug' : 'Debug' }}
         </button>
         
-        <div v-if="showDebug && result && result.debug" class="absolute top-8 left-2 right-2 bg-black/90 text-green-400 font-mono text-[10px] p-4 rounded z-50 border border-green-900 overflow-auto max-h-64 shadow-2xl">
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                     <strong>LLM Used:</strong> {{ result.debug.llmUsed || result.debug.model }}<br>
-                     <strong>Endpoint:</strong> {{ result.debug.endpointName || 'compile' }}<br>
-                     <strong>LLM OK:</strong> <span :class="result.debug.llmOk ? 'text-green-400' : 'text-red-400'">{{ result.debug.llmOk }}</span><br>
-                     <strong>Fallback:</strong> {{ result.debug.fallbackReason || 'None' }}<br>
-                     <strong>Attempts:</strong> {{ result.debug.llmAttempts }}<br>
-                     <strong>Domain:</strong> {{ result.debug.domain }}<br>
-                     <strong>Cached:</strong> {{ result.debug.cached || false }}
-                     <br>
-                     <span v-if="result.debug.inferredName" class="text-[10px] block mt-1 pt-1 border-t border-white/10">
-                        <strong>Inferred:</strong> {{ result.debug.inferredName }}
-                        <span :class="{
-                            'text-green-400': result.debug.inferredConfidence === 'high',
-                            'text-yellow-400': result.debug.inferredConfidence === 'medium',
-                            'text-red-400': result.debug.inferredConfidence === 'low'
-                        }">({{ result.debug.inferredConfidence }})</span>
-                     </span>
-                </div>
-                <div>
-                     <strong>ValidDraft:</strong> {{ result.debug.draftUsed }}<br>
-                     <strong>Overrides:</strong> {{ result.debug.overrides?.join(', ') || 'None' }}<br>
-                     <span :class="{'text-green-400': result.debug.inferredNameConfidence === 'high', 'text-yellow-400': result.debug.inferredNameConfidence === 'medium', 'text-red-400': result.debug.inferredNameConfidence === 'low'}">
-                        <strong>Name:</strong> {{ result.debug.inferredNameConfidence }}
-                     </span><br>
-                     <div v-if="result.debug.positioningDebug" class="mt-2 pt-2 border-t border-white/10">
-                         <strong>Pos. LLM:</strong> {{ result.debug.positioningDebug.llmUsed ? 'Yes' : 'No' }}<br>
-                         <strong>Issues:</strong> {{ result.debug.positioningDebug.validationIssues?.length || 0 }}<br>
-                     </div>
-                </div>
-            </div>
-             <details class="mt-2">
-                <summary class="cursor-pointer hover:text-white">Draft Raw</summary>
-                <pre class="mt-1 text-white/70">{{ result.debug.finalKeyFields }}</pre>
-            </details>
-             <details v-if="result.debug.positioningDebug" class="mt-2">
-                <summary class="cursor-pointer hover:text-white">Pos. Raw</summary>
-                <div class="mt-1 flex flex-col gap-1 text-[10px]">
-                    <span class="text-white/50">Model: {{ result.debug.positioningDebug.model }}</span>
-                    <pre class="text-white/70 whitespace-pre-wrap">{{ result.debug.positioningDebug.rawText }}</pre>
-                </div>
-            </details>
+        <div v-if="showDebug && result" class="absolute top-8 left-2 right-2 bg-[#0B0F1A]/95 text-green-400 font-mono text-[10px] p-4 rounded z-50 border border-green-900 overflow-auto max-h-64 shadow-2xl">
+           <pre>{{ result.debug }}</pre>
         </div>
 
         <div class="max-w-xl mx-auto w-full space-y-10 pb-20">
@@ -60,86 +19,87 @@
             <!-- Header -->
             <div class="space-y-6">
                 <div class="space-y-2">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface/50 border border-white/5 backdrop-blur-sm">
-                      <span class="w-2 h-2 rounded-full bg-accent animate-pulse"/>
-                      <span class="text-xs uppercase tracking-widest text-textMuted font-bold">DLYTFUL ZERO</span>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#121624] border border-[#7FA6D6]/10 backdrop-blur-sm">
+                      <span class="w-2 h-2 rounded-full bg-[#C08A2B] animate-pulse"/>
+                      <span class="text-xs uppercase tracking-widest text-[#7FA6D6] font-bold">dlytful</span>
                     </div>
-                    <h1 class="text-4xl lg:text-5xl font-black tracking-tighter leading-[0.9]">
-                      Instant Brand <br>
-                      <span class="text-accent">manifesto.</span>
-                    </h1>
-                    <p class="text-lg text-textMuted font-light">
-                      ChatGPT chats. Dlytful compiles a spec you can reuse.
+                    <div class="space-y-1">
+                        <h1 class="text-4xl lg:text-5xl font-black tracking-tighter leading-[0.9] text-[#E9ECF3]">
+                          Build your <br>
+                          <span class="text-[#C08A2B]">brand system.</span>
+                        </h1>
+                    </div>
+                    <p class="text-lg text-[#7FA6D6] font-light">
+                      Answer a few questions. See the change immediately in your AI builder.
                     </p>
                 </div>
 
-                <!-- Benefits -->
-                <ul class="space-y-2 text-sm text-textMuted border-l-2 border-white/5 pl-4 py-2">
-                    <li class="flex items-center gap-2">
-                        <span class="text-accent">✓</span> Brand prompt for your builder
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="text-accent">✓</span> Voice rules & tone profile
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="text-accent">✓</span> Palette & type tokens
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="text-accent">✓</span> One-liner & headlines
-                    </li>
-                </ul>
-
-                <!-- Primary CTA -->
-                <button 
-                  @click="useExample"
-                  class="group flex items-center gap-3 px-5 py-3 rounded-lg bg-surface/10 border border-white/10 hover:bg-surface/20 hover:border-accent/30 transition-all text-sm font-bold uppercase tracking-widest text-text"
-                >
-                    <span>Use example & compile</span>
-                    <span class="text-accent group-hover:translate-x-1 transition-transform">→</span>
+                <!-- Example Action -->
+            <!-- Example Action -->
+            <div class="flex items-center gap-2">
+                 <div class="relative group">
+                    <button class="flex items-center gap-3 px-5 py-3 rounded-lg bg-[#121624] border border-[#7FA6D6]/20 hover:border-[#C08A2B]/40 transition-all text-sm font-bold uppercase tracking-widest text-[#E9ECF3]">
+                        <span>Examples</span>
+                        <span class="text-[#7FA6D6] group-hover:text-[#C08A2B] transition-colors">▼</span>
+                    </button>
+                    <!-- Dropdown -->
+                    <div class="absolute left-0 top-full mt-2 w-64 max-h-96 overflow-y-auto bg-[#0B0F1A] border border-[#7FA6D6]/20 rounded-lg shadow-xl z-50 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
+                        <div class="p-2 space-y-1">
+                            <button v-for="ex in EXAMPLES" :key="ex.title" class="w-full text-left px-3 py-2 rounded text-xs text-[#7FA6D6] hover:bg-[#121624] hover:text-[#E9ECF3] transition-colors" @click="loadExample(ex)">
+                                <span class="block font-bold">{{ ex.title }}</span>
+                                <span class="text-[10px] opacity-70 uppercase">{{ ex.type }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="px-3 py-3 rounded-lg border border-[#7FA6D6]/10 hover:border-[#7FA6D6]/30 hover:bg-[#121624] transition-all text-[#7FA6D6] hover:text-[#E9ECF3] text-xs font-bold uppercase tracking-widest" title="Random Example" @click="loadRandomExample">
+                    Random
                 </button>
             </div>
+            </div>
 
-            <hr class="border-white/5" />
+            <hr class="border-[#7FA6D6]/10" >
 
             <!-- Input Flow -->
             <div class="space-y-8">
                 
                 <!-- Q1 -->
                 <div class="space-y-3 transition-opacity duration-500">
-                    <label class="text-xs uppercase text-textMuted tracking-widest font-bold flex justify-between">
-                        1. The Product <span class="text-accent/50 text-[10px]" v-if="activeStep === 0">Starts Draft</span>
+                    <label class="text-xs uppercase text-[#7FA6D6] tracking-widest font-bold flex justify-between">
+                        1. What are you building? <span v-if="activeStep === 0" class="text-[#C08A2B]/50 text-[10px]">Required</span>
                     </label>
                     <textarea 
                         v-model="inputs.q1_core_what" 
+                        rows="2"
+                        placeholder="Describe the product in plain language. Not marketing copy." 
+                        class="w-full bg-[#121624] border border-[#7FA6D6]/10 rounded-lg p-5 text-lg text-[#E9ECF3] placeholder:text-[#7FA6D6]/30 focus:border-[#C08A2B] outline-none transition-all resize-none shadow-sm focus:bg-[#1A1F30] font-mono text-sm"
+                        :class="{'border-[#C08A2B]/50': activeStep === 0}"
                         @input="onInputQ1"
-                        rows="2" 
-                        placeholder="e.g. A deterministic brand compiler for developers."
-                        class="w-full bg-surface/10 border border-white/10 rounded-lg p-5 text-lg text-text placeholder:text-textMuted/20 focus:border-accent outline-none transition-all resize-none shadow-sm focus:bg-surface/20"
-                        :class="{'border-accent/50': activeStep === 0}"
-                    ></textarea>
+                    />
                 </div>
 
                 <!-- Product Type Dropdown -->
                 <div class="space-y-3 transition-opacity duration-500">
-                    <label class="text-xs uppercase text-textMuted tracking-widest font-bold flex justify-between">
-                         1b. Product Type <span class="text-accent/50 text-[10px]" v-if="inputs.product_type">Refines Logic</span>
+                    <label class="text-xs uppercase text-[#7FA6D6] tracking-widest font-bold flex justify-between">
+                         1b. Product category
                     </label>
                     <div class="relative">
                         <select 
                             v-model="inputs.product_type"
-                            @change="onInputQ1" 
-                            class="w-full bg-surface/10 border border-white/10 rounded-lg p-4 pr-10 text-base text-text focus:border-accent outline-none appearance-none cursor-pointer transition-all shadow-sm focus:bg-surface/20"
+                            class="w-full bg-[#121624] border border-[#7FA6D6]/10 rounded-lg p-4 pr-10 text-base text-[#E9ECF3] focus:border-[#C08A2B] outline-none appearance-none cursor-pointer transition-all shadow-sm focus:bg-[#1A1F30] font-mono text-sm" 
+                            @change="onInputQ1"
                         >
-                            <option value="" disabled class="bg-surface text-textMuted">Select type...</option>
-                            <option value="devtools" class="bg-surface text-text">Developer Tool / API</option>
-                            <option value="saas" class="bg-surface text-text">B2B SaaS</option>
-                            <option value="mobile" class="bg-surface text-text">Mobile App</option>
-                            <option value="consumer" class="bg-surface text-text">Consumer Product</option>
-                            <option value="marketplace" class="bg-surface text-text">Marketplace</option>
-                            <option value="service" class="bg-surface text-text">Agency / Service</option>
-                            <option value="other" class="bg-surface text-text">Other</option>
+                            <option value="" disabled class="bg-[#0B0F1A] text-[#7FA6D6]">Select type...</option>
+                            <option value="devtools" class="bg-[#0B0F1A] text-[#E9ECF3]">Developer Tool / API</option>
+                            <option value="saas" class="bg-[#0B0F1A] text-[#E9ECF3]">B2B SaaS</option>
+                            <option value="mobile" class="bg-[#0B0F1A] text-[#E9ECF3]">Mobile App</option>
+                            <option value="consumer" class="bg-[#0B0F1A] text-[#E9ECF3]">Consumer Product</option>
+                            <option value="marketplace" class="bg-[#0B0F1A] text-[#E9ECF3]">Marketplace</option>
+                            <option value="service" class="bg-[#0B0F1A] text-[#E9ECF3]">Agency / Service</option>
+                            <option value="other" class="bg-[#0B0F1A] text-[#E9ECF3]">Other</option>
                         </select>
-                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-textMuted">
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#7FA6D6]">
                             ▼
                         </div>
                     </div>
@@ -147,68 +107,112 @@
 
                 <!-- Q2 (Progressive) -->
                 <div class="space-y-3">
-                    <label class="text-xs uppercase text-textMuted tracking-widest font-bold flex justify-between">
-                        <span>2. The Moment</span>
-                        <span v-if="activeStep < 1" class="text-textMuted/50 text-[10px]">Unlocks Voice</span>
-                        <span v-else class="text-accent/50 text-[10px]">Upgrades Draft</span>
+                    <label class="text-xs uppercase text-[#7FA6D6] tracking-widest font-bold flex justify-between">
+                        <span>2. Why does it exist?</span>
+                        <span v-if="activeStep === 1" class="text-[#C08A2B]/50 text-[10px] animate-pulse">Next Step</span>
                     </label>
                     <textarea 
                         v-model="inputs.q2_moment" 
+                        rows="4"
+                        placeholder="What problem does it solve, or what frustration does it remove?" 
+                        class="w-full bg-[#121624] border border-[#7FA6D6]/10 rounded-lg p-5 text-base text-[#E9ECF3] placeholder:text-[#7FA6D6]/30 focus:border-[#C08A2B] outline-none transition-all resize-none shadow-sm focus:bg-[#1A1F30] font-mono text-sm"
+                        :class="{'border-[#C08A2B]/50': activeStep === 1}"
                         @input="onInputQ2"
-                        rows="4" 
-                        placeholder="e.g. A founder is stuck writing copy. They paste their messy notes into Dlytful, hit compile, and suddenly they have a professional brand spec. They feel relieved."
-                        class="w-full bg-surface/10 border border-white/10 rounded-lg p-5 text-base text-text placeholder:text-textMuted/20 focus:border-accent outline-none transition-all resize-none shadow-sm focus:bg-surface/20"
-                        :class="{'border-accent/50': activeStep === 1}"
-                    ></textarea>
+                    />
                 </div>
 
                 <!-- Q3 (Progressive) -->
                  <div class="space-y-3">
-                    <label class="text-xs uppercase text-textMuted tracking-widest font-bold flex justify-between">
-                        <span>3. Visuals (Optional)</span>
-                        <span v-if="activeStep < 2" class="text-textMuted/50 text-[10px]">Unlocks Refinement</span>
-                        <span v-else class="text-accent/50 text-[10px]">Refines Look</span>
+                    <label class="text-xs uppercase text-[#7FA6D6] tracking-widest font-bold flex justify-between">
+                        <span>3. How should it feel?</span>
+                        <span v-if="activeStep === 2" class="text-[#C08A2B]/50 text-[10px] animate-pulse">Optional</span>
                     </label>
                      <textarea 
                         v-model="inputs.q3_url_or_desc" 
-                        @input="onInputQ3"
-                        rows="2" 
-                        placeholder="e.g. Minimal, dark mode, linear-style, sans-serif."
-                        class="w-full bg-surface/10 border border-white/10 rounded-lg p-5 text-base text-text placeholder:text-textMuted/20 focus:border-accent outline-none transition-all resize-none shadow-sm focus:bg-surface/20"
-                         :class="{'border-accent/50': activeStep === 2}"
-                    ></textarea>
+                        rows="2"
+                        placeholder="Tone, vibe, references, or things you want to avoid." 
+                        class="w-full bg-[#121624] border border-[#7FA6D6]/10 rounded-lg p-5 text-base text-[#E9ECF3] placeholder:text-[#7FA6D6]/30 focus:border-[#C08A2B] outline-none transition-all resize-none shadow-sm focus:bg-[#1A1F30] font-mono text-sm"
+                        :class="{'border-[#C08A2B]/50': activeStep === 2}"
+                         @input="onInputQ3"
+                    />
                 </div>
 
                 <!-- Footer Actions -->
-                 <div class="pt-4 flex gap-6 items-center border-t border-white/5">
-                    <button @click="reset" class="text-xs text-textMuted hover:text-red-400 transition-colors uppercase tracking-widest">Reset</button>
-                    <button @click="resumeLast" class="text-xs text-textMuted hover:text-accent transition-colors uppercase tracking-widest flex items-center gap-2">
-                         Resume Last
-                    </button>
-                    <button v-if="activeStep >= 2" @click="() => generateFull(true)" class="text-xs text-textMuted hover:text-accent transition-colors uppercase tracking-widest flex items-center gap-2">
-                        Remix Vibe
-                        <span class="text-accent/50">⟳</span>
-                    </button>
+                 <div class="pt-6 flex flex-col gap-4 border-t border-[#7FA6D6]/10">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-2">
+                            <button class="w-full py-3 px-4 rounded-lg bg-[#C08A2B] text-[#0B0F1A] font-bold uppercase tracking-widest text-xs hover:brightness-110 active:scale-95 transition-all" @click="() => generateFull(false)">
+                                Shape brand
+                            </button>
+                            <div class="text-[9px] text-center text-[#7FA6D6]/30 uppercase tracking-widest">Deterministic</div>
+                        </div>
+                        
+                        <div v-if="activeStep >= 2" class="flex flex-col gap-2">
+                            <button class="w-full py-3 px-4 rounded-lg bg-[#121624] border border-[#7FA6D6]/20 text-[#7FA6D6] font-bold uppercase tracking-widest text-xs hover:text-[#C08A2B] hover:border-[#C08A2B]/40 transition-all flex items-center justify-center gap-2" @click="() => generateFull(true)">
+                                Remix expression
+                                <span class="text-[#C08A2B]/50">⟳</span>
+                            </button>
+                            <div class="text-[9px] text-center text-[#C08A2B]/50 uppercase tracking-widest">Variation allowed</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center text-[10px] text-[#7FA6D6]/50">
+                        <span>Remix adjusts expression, not identity.</span>
+                        <button class="hover:text-red-400 transition-colors uppercase tracking-widest" @click="reset">Reset</button>
+                    </div>
+                    <!-- Remix Advice -->
+                    <div v-if="activeStep >= 2" class="text-[10px] text-[#7FA6D6]/40 text-center italic">
+                        Remix changes tone expression only. If inputs are sparse, results may look similar.
+                    </div>
                  </div>
+
+                <!-- Recognition Timeline (Locked) -->
+                 <div class="space-y-4 pt-8 border-t border-[#7FA6D6]/10">
+                    <div class="text-[10px] uppercase tracking-widest text-[#7FA6D6] font-bold">Recognition Timeline</div>
+                    <div class="relative pl-2 space-y-6 before:absolute before:left-[5px] before:top-2 before:bottom-2 before:w-px before:bg-[#7FA6D6]/20">
+                        <div class="relative flex items-center gap-3">
+                            <div class="w-1.5 h-1.5 rounded-full bg-[#C08A2B] relative z-10 ring-4 ring-[#0B0F1A]"/>
+                            <div class="text-xs text-[#E9ECF3]">Raw inputs</div>
+                        </div>
+                        <div class="relative flex items-center gap-3">
+                            <div class="w-1.5 h-1.5 rounded-full bg-[#C08A2B] relative z-10 ring-4 ring-[#0B0F1A]"/>
+                            <div class="text-xs text-[#E9ECF3]">Recognition layer</div>
+                        </div>
+                        <div class="relative flex items-center gap-3 opacity-50 group cursor-pointer hover:opacity-100 transition-opacity" @click="openModal('recognition')">
+                            <div class="w-1.5 h-1.5 rounded-full bg-[#7FA6D6] relative z-10 ring-4 ring-[#0B0F1A]"/>
+                            <div class="flex items-center gap-2 text-xs text-[#7FA6D6] group-hover:text-[#C08A2B] transition-colors">
+                                <span>Anchors</span>
+                                <LockIcon class="w-3 h-3" />
+                            </div>
+                        </div>
+                        <div class="relative flex items-center gap-3 opacity-50">
+                            <div class="w-1.5 h-1.5 rounded-full bg-[#7FA6D6] relative z-10 ring-4 ring-[#0B0F1A]"/>
+                            <div class="flex items-center gap-2 text-xs text-[#7FA6D6]">
+                                <span>Expression</span>
+                                <LockIcon class="w-3 h-3" />
+                            </div>
+                        </div>
+                        <div class="relative flex items-center gap-3 opacity-50">
+                            <div class="w-1.5 h-1.5 rounded-full bg-[#7FA6D6] relative z-10 ring-4 ring-[#0B0F1A]"/>
+                            <div class="flex items-center gap-2 text-xs text-[#7FA6D6]">
+                                <span>Consistency</span>
+                                <LockIcon class="w-3 h-3" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
       </div>
 
       <!-- RIGHT: Preview (Sticky/Scrollable) -->
-      <div class="w-full lg:w-1/2 bg-surface/5 backdrop-blur-xl relative flex flex-col h-full overflow-hidden border-l border-white/5">
+      <div class="w-full lg:w-1/2 bg-[#0B0F1A] relative flex flex-col h-full overflow-hidden border-l border-[#7FA6D6]/10">
         
         <!-- Status Indicator -->
         <div class="absolute top-6 right-6 z-20 flex items-center gap-3 pointer-events-none">
             <template v-if="loading">
-                 <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/80 border border-accent/20 text-[10px] uppercase tracking-widest text-accent backdrop-blur-md shadow-xl">
-                    <span class="w-1.5 h-1.5 rounded-full bg-accent animate-spin" />
+                 <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#121624] border border-[#C08A2B]/20 text-[10px] uppercase tracking-widest text-[#C08A2B] backdrop-blur-md shadow-xl">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#C08A2B] animate-spin" />
                     {{ statusLabel }}
-                </div>
-            </template>
-            <template v-else-if="result">
-                <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/50 border border-white/10 text-[10px] uppercase tracking-widest text-textMuted backdrop-blur-md">
-                    <span class="w-1.5 h-1.5 rounded-full" :class="activeStep >= 2 ? 'bg-accent' : 'bg-white/50'" />
-                    {{ activeStep >= 2 ? 'Refined' : (activeStep >= 1 ? 'Upgraded' : 'Draft') }}
                 </div>
             </template>
         </div>
@@ -216,219 +220,372 @@
         <!-- Scrollable Content -->
         <div class="flex-grow overflow-y-auto p-6 lg:p-12 space-y-12 scroll-smooth">
             
-            <!-- 1. Identity (Always Valid or Skeleton) -->
-            <section class="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-700">
-                <div class="flex items-center gap-3 text-accent text-[10px] uppercase tracking-widest font-bold opacity-70">
-                    <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
-                    Identity {{ result ? '' : '(Pending)' }}
+            <!-- 1. Recognition Layer Summary -->
+            <section class="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                <div class="flex items-center gap-3 text-[#C08A2B] text-[10px] uppercase tracking-widest font-bold opacity-70">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#C08A2B]"/>
+                    Recognition Layer Summary {{ result ? '' : '(Pending)' }}
                 </div>
                 
-                <div v-if="result">
-                     <h2 class="text-5xl lg:text-7xl font-black text-text tracking-tighter leading-[0.9] break-words">{{ result.brandSpec.productName }}</h2>
-                     <p class="text-xl text-textMuted font-light mt-4 border-l-2 border-accent/20 pl-4">{{ result.brandSpec.category }}</p>
+                <div v-if="result" class="p-4 bg-[#121624] rounded-xl border border-[#7FA6D6]/10 font-mono text-sm space-y-2">
+                     <div class="grid grid-cols-[140px_1fr] gap-2 items-baseline">
+                        <span class="text-[#7FA6D6] text-xs uppercase tracking-wide">Name</span>
+                        <span class="text-[#E9ECF3]">{{ valOr(result.identity.productName) }}</span>
+                     </div>
+                     <div class="grid grid-cols-[140px_1fr] gap-2 items-baseline">
+                        <span class="text-[#7FA6D6] text-xs uppercase tracking-wide">Category</span>
+                        <span class="text-[#E9ECF3]">{{ valOr(result.identity.category) }}</span>
+                     </div>
+                     <div class="grid grid-cols-[140px_1fr] gap-2 items-baseline">
+                        <span class="text-[#7FA6D6] text-xs uppercase tracking-wide">Audience</span>
+                        <span class="text-[#E9ECF3]">{{ valOr(result.copy.positioningParts.target) }}</span>
+                     </div>
+                     <div class="grid grid-cols-[140px_1fr] gap-2 items-baseline">
+                        <span class="text-[#7FA6D6] text-xs uppercase tracking-wide">Primary behavior</span>
+                        <span class="text-[#E9ECF3]">{{ valOr(result.identity.outcome) }}</span>
+                     </div>
+                     <div class="grid grid-cols-[140px_1fr] gap-2 items-baseline">
+                        <span class="text-[#7FA6D6] text-xs uppercase tracking-wide">Deterministic fingerprint</span>
+                        <span class="text-[#E9ECF3] font-mono text-[10px] break-all">{{ result.inputHash }}</span>
+                     </div>
                 </div>
-                <!-- Skeleton -->
-                <div v-else class="space-y-4 animate-pulse">
-                     <div class="h-16 lg:h-20 w-3/4 bg-white/5 rounded-lg"></div>
-                     <div class="h-6 w-1/3 bg-white/5 rounded"></div>
+
+                <div v-else class="h-32 w-full bg-[#121624] rounded-lg border border-[#7FA6D6]/10 dashed animate-pulse opacity-30"/>
+            </section>
+
+            <!-- 2. Product Definition -->
+            <section v-if="result" class="space-y-4 pt-6 border-t border-[#7FA6D6]/10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div class="flex items-center gap-3 text-[#C08A2B] text-[10px] uppercase tracking-widest font-bold opacity-70">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#C08A2B]"/>
+                    Product Definition
+                </div>
+
+                <div class="p-4 bg-[#121624] rounded-xl border border-[#7FA6D6]/10 font-mono text-xs space-y-3">
+                     <div class="grid grid-cols-[140px_1fr] gap-2 items-baseline">
+                        <span class="text-[#7FA6D6] uppercase tracking-wide">Problem</span>
+                        <span class="text-[#E9ECF3] leading-relaxed">{{ valOr(result.copy.positioningParts.alternative) }}</span>
+                     </div>
+                     <div class="grid grid-cols-[140px_1fr] gap-2 items-baseline">
+                        <span class="text-[#7FA6D6] uppercase tracking-wide">Core behavior</span>
+                        <span class="text-[#E9ECF3] leading-relaxed">{{ valOr(result.copy.positioningParts.value) }}</span>
+                     </div>
+                     <div class="grid grid-cols-[140px_1fr] gap-2 items-baseline">
+                        <span class="text-[#7FA6D6] uppercase tracking-wide">Mechanism</span>
+                        <span class="text-[#E9ECF3] opacity-50">Not specified</span>
+                     </div>
+                     <div class="grid grid-cols-[140px_1fr] gap-2 items-baseline">
+                        <span class="text-[#7FA6D6] uppercase tracking-wide">Non goals</span>
+                        <span class="text-[#E9ECF3] opacity-50">Not specified</span>
+                     </div>
+                     <div class="grid grid-cols-[140px_1fr] gap-2 items-baseline">
+                        <span class="text-[#7FA6D6] uppercase tracking-wide">Constraints</span>
+                        <span class="text-[#E9ECF3] opacity-50">Not specified</span>
+                     </div>
                 </div>
             </section>
 
-            <!-- 2. Voice & Tone (Upgrades with Q2) -->
-            <section class="space-y-6 pt-8 border-t border-white/5 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-                <div class="flex items-center gap-3 text-accent text-[10px] uppercase tracking-widest font-bold opacity-70">
-                    <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
-                    Voice & Vibe {{ activeStep >= 1 ? '' : '(Draft)' }}
+             <!-- 3. Recognition Constraints -->
+            <section v-if="result" class="space-y-4 pt-6 border-t border-[#7FA6D6]/10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                 <div class="flex items-center gap-3 text-[#C08A2B] text-[10px] uppercase tracking-widest font-bold opacity-70">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#C08A2B]"/>
+                    Recognition Constraints
                 </div>
 
-                <div v-if="result && result.brandSpec" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <!-- Archetype (Locked) -->
-                     <button @click="openLockedModal('Archetype')" class="p-5 bg-surface/10 rounded-xl border border-white/5 hover:border-accent/20 transition-all group text-left w-full relative overflow-hidden">
-                         <div class="text-[10px] text-textMuted uppercase mb-2 tracking-wider flex justify-between">
-                            Archetype
-                            <span class="text-[8px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 opacity-50">LOCKED</span>
+                <div class="relative group overflow-hidden rounded-xl">
+                    <div class="p-4 bg-[#121624] border border-[#7FA6D6]/10 font-mono text-xs space-y-3 filter blur-[1px] opacity-70">
+                         <div class="grid grid-cols-[140px_1fr] gap-2 items-baseline">
+                            <span class="text-[#7FA6D6] uppercase tracking-wide">Must preserve</span>
+                            <span class="text-[#E9ECF3]">{{ valOr(result.vibe.archetype) }}</span>
                          </div>
-                         <div class="text-xl font-bold text-text group-hover:text-accent transition-colors">{{ result.brandSpec.archetypePrimary }}</div>
-                         <div class="text-xs text-textMuted mt-1 opacity-70">The main character energy</div>
-                     </button>
-                     
-                     <!-- Palette (Locked) -->
-                     <button @click="openLockedModal('Palette')" class="p-5 bg-surface/10 rounded-xl border border-white/5 hover:border-accent/20 transition-all text-left w-full group relative overflow-hidden" v-if="result.brandSpec.designTokens">
-                        <div class="text-[10px] text-textMuted uppercase mb-2 tracking-wider flex justify-between">
-                            Palette
-                            <span class="text-[8px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 opacity-50">LOCKED</span>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="flex -space-x-2">
-                                <div class="w-8 h-8 rounded-full shadow-lg border-2 border-background" :style="{ backgroundColor: result.brandSpec.designTokens.accent }"></div>
-                                <div class="w-8 h-8 rounded-full shadow-lg border-2 border-background" :style="{ backgroundColor: result.brandSpec.designTokens.base }"></div>
-                                <div class="w-8 h-8 rounded-full shadow-lg border-2 border-background" :style="{ backgroundColor: result.brandSpec.designTokens.ink }"></div>
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-sm font-bold text-text truncate max-w-[100px]" :style="{ fontFamily: result.brandSpec.designTokens.font }">{{ result.brandSpec.designTokens.font }}</span>
-                                <span class="text-[10px] text-textMuted">Radius: {{ result.brandSpec.designTokens.radius }}rem</span>
-                            </div>
-                        </div>
-                    </button>
-                </div>
-
-                <!-- Skeleton / Placeholder -->
-                <div v-else class="grid grid-cols-2 gap-4 opacity-30">
-                     <div class="h-24 bg-white/5 rounded-xl border border-white/5 dashed"></div>
-                     <div class="h-24 bg-white/5 rounded-xl border border-white/5 dashed"></div>
-                </div>
-
-                 <!-- Adjectives -->
-                 <div v-if="result && result.brandSpec.voice" class="space-y-2 cursor-pointer group" @click="openLockedModal('Tone')">
-                    <div class="text-[10px] text-textMuted uppercase tracking-wider flex justify-between">
-                        Tone
-                        <span class="text-[8px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 opacity-50">LOCKED</span>
+                         <div class="grid grid-cols-[140px_1fr] gap-2 items-baseline">
+                            <span class="text-[#7FA6D6] uppercase tracking-wide">Must avoid</span>
+                            <span class="text-[#E9ECF3]">{{ (result.constraints.banned_terms || []).slice(0, 5).join(', ') }}{{ result.constraints.banned_terms?.length > 5 ? '...' : '' }}</span>
+                         </div>
+                          <div class="grid grid-cols-[140px_1fr] gap-2 items-baseline">
+                            <span class="text-[#7FA6D6] uppercase tracking-wide">Allowed variation</span>
+                            <span class="text-[#E9ECF3]">{{ (result.vibe.toneTags || []).join(', ') || 'Not specified' }}</span>
+                         </div>
                     </div>
-                    <div class="flex flex-wrap gap-2 group-hover:opacity-80 transition-opacity">
-                        <span v-for="t in result.brandSpec.voice.soundsLike" :key="t" class="px-3 py-1.5 rounded-md bg-white/5 text-xs text-text border border-white/5 font-medium">
-                            {{ t }}
-                        </span>
-                    </div>
+                    
+                    <!-- ANCHOR OVERLAY -->
+                    <AnchorOverlay
+                        title="These constraints are inferred."
+                        description="Unlock to edit what must be preserved, define what must never appear, and lock constraints across all outputs."
+                        cta="Anchor constraints"
+                        @click="openModal('constraints')"
+                    />
                 </div>
-                 <div v-else class="flex gap-2 opacity-20">
-                    <div class="w-16 h-8 bg-white/10 rounded-md"></div>
-                    <div class="w-20 h-8 bg-white/10 rounded-md"></div>
-                    <div class="w-12 h-8 bg-white/10 rounded-md"></div>
-                 </div>
             </section>
 
-            <!-- 3. Quick Transform (Assets) -->
-             <section class="relative space-y-6 pt-8 border-t border-white/5 flex-grow pb-24 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
-                 
-                 <div class="flex items-center gap-3 text-accent text-[10px] uppercase tracking-widest font-bold opacity-70">
-                    <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
-                    Brand Prompt {{ result ? '' : '(Waiting)' }}
+             <!-- 4. Open Questions -->
+             <section v-if="openQuestions.length > 0" class="space-y-4 pt-6 border-t border-[#7FA6D6]/10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                  <div class="flex items-center gap-3 text-yellow-500 text-[10px] uppercase tracking-widest font-bold opacity-90">
+                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"/>
+                    Open Questions
                 </div>
-
-                <!-- Content -->
-                <div v-if="result && result.assets" class="space-y-6">
-                    
-                    <!-- Loading State -->
-                    <div v-if="isPolishedLoading" class="flex flex-col items-center justify-center min-h-[300px] space-y-4 animate-in fade-in duration-500">
-                        <LoadingSpinnerRing :size="44" />
-                        <p class="text-[10px] uppercase tracking-widest text-accent/50 animate-pulse font-bold">Polishing Copy...</p>
+                <div class="relative overflow-hidden rounded-lg">
+                    <div class="bg-yellow-500/10 border border-yellow-500/20 p-4 space-y-2 filter blur-[1px] opacity-80">
+                        <div v-for="q in openQuestions" :key="q.label" class="flex justify-between items-start text-sm">
+                            <span class="text-yellow-200">{{ q.label }}?</span>
+                        </div>
                     </div>
+                    <AnchorOverlay
+                        title="This data shapes your product."
+                        description="Unlock to answer them once, turn answers into constraints, and remove ambiguity from future outputs."
+                        cta="Anchor recognition"
+                        @click="openModal('questions')"
+                    />
+                </div>
+             </section>
 
-                    <!-- Real Content -->
-                    <div v-else class="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                        <div class="p-6 bg-gradient-to-br from-white/5 to-transparent rounded-xl border border-white/10 space-y-6 relative overflow-hidden group hover:border-accent/20 transition-colors">
-                            <div class="space-y-2">
-                                <div class="text-[10px] text-textMuted uppercase tracking-wider">One Liner</div>
-                                <p class="text-lg md:text-xl text-text leading-relaxed font-light font-serif italic opacity-90">"{{ result.assets.oneLiner }}"</p>
+             <!-- 5. Optional Derived Copy -->
+             <section v-if="result" class="space-y-6 pt-12 border-t border-[#7FA6D6]/10 animate-in fade-in slide-in-from-bottom duration-700 opacity-100 transition-opacity">
+                 <div class="space-y-1">
+                    <div class="flex items-center gap-3 text-[#7FA6D6] text-[10px] uppercase tracking-widest font-bold">
+                        Optional derived copy
+                    </div>
+                    <p class="text-[10px] text-[#7FA6D6]/50 italic">
+                        This section may vary on remix.
+                    </p>
+                 </div>
+
+                 <!-- Archetype Card -->
+                 <div class="col-span-1 md:col-span-2 relative group overflow-visible rounded-lg"> <!-- Removed styling from container, handled by inner/overlay -->
+                       <!-- Blurred Content Layer -->
+                       <div class="p-4 bg-[#121624] rounded-lg border border-[#7FA6D6]/10 space-y-3 filter blur-[1px] opacity-80 transition-all duration-300">
+                            <div class="flex items-center gap-2">
+                                <div class="text-[10px] text-[#7FA6D6] uppercase tracking-wider font-bold">Brand archetype</div>
                             </div>
-                            <div class="h-px bg-white/5 w-full"></div>
-                             <div class="space-y-2">
-                                <div class="text-[10px] text-textMuted uppercase tracking-wider">Positioning Declaration</div>
-                                <p class="text-sm text-textMuted leading-loose">
-                                    <span v-if="result.assets.positioningParts" class="space-y-2 block">
-                                         <span class="block">
-                                            For <strong class="text-text">{{ result.assets.positioningParts.target }}</strong>, 
-                                            <strong class="text-text">{{ result.brandSpec.productName }}</strong> is a 
-                                            <strong class="text-text">{{ result.assets.positioningParts.category }}</strong> that 
-                                            <strong class="text-text">{{ result.assets.positioningParts.value }}</strong>.
-                                         </span>
-                                         <span class="block">
-                                            Unlike <span class="text-text/70 border-b border-white/10">{{ result.assets.positioningParts.alternative || 'alternatives' }}</span>, 
-                                            it <strong class="text-text">{{ result.assets.positioningParts.differentiator }}</strong>.
-                                         </span>
-                                         <span class="block text-xs uppercase tracking-wider opacity-70 mt-4">
-                                            Proof: <span class="text-text italic">{{ result.assets.positioningParts.proof }}</span>
-                                         </span>
-                                    </span>
-                                    <span v-else>
-                                        {{ result.assets.positioning }}
-                                    </span>
+                            <div class="flex flex-col gap-1">
+                                    <div class="text-xl font-bold text-[#E9ECF3]">{{ result.vibe.archetype }}</div>
+                                    <p class="text-[10px] text-[#7FA6D6] leading-tight opacity-70">
+                                    This guides tone, language, and UI decisions.
                                 </p>
                             </div>
-                        </div>
-                        
-                        <!-- Headlines -->
-                        <div class="space-y-3 pt-2">
-                            <div class="text-[10px] text-textMuted uppercase tracking-wider">Headline Options</div>
-                            <ul class="space-y-2">
-                                 <li v-for="h in result.assets.heroHeadlines" :key="h" class="text-sm text-text flex items-start gap-2">
-                                    <span class="text-accent mt-1">›</span> {{ h }}
-                                 </li>
-                            </ul>
-                        </div>
-                    </div>
 
-                <!-- Brand Prompt Export -->
-                <div v-if="result && result.brandPrompt" class="space-y-3 pt-6 border-t border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-100">
-                    <div class="flex items-center justify-between">
-                         <div class="text-[10px] text-textMuted uppercase tracking-wider font-bold">Builder Prompt</div>
-                         <div class="text-[10px] text-accent opacity-70">Use in Lovable / v0 / Replit</div>
-                    </div>
-                    
+                            <!-- Why this archetype -->
+                            <div class="mt-4 pt-3 border-t border-[#7FA6D6]/10 space-y-3">
+                                <!-- Score -->
+                                <div class="flex items-center justify-between text-[10px]">
+                                    <span class="text-[#7FA6D6]/60 uppercase tracking-widest">Confidence Score</span>
+                                    <span class="font-mono text-[#C08A2B] font-bold">{{ result.vibe.score }}</span>
+                                </div>
+                                <!-- Content truncated effectively by blur -->
+                            </div>
+                     </div>
+
+                     <!-- ANCHOR OVERLAY -->
+                     <AnchorOverlay
+                        title="This archetype is inferred."
+                        description="Unlock to manually select an archetype, blend multiple archetypes, and prevent drift across remixes."
+                        cta="Unlock archetype anchor"
+                        @click="openModal('archetype')"
+                     />
+                 </div>
+
+                 <!-- Drift Preview -->
+                 <div class="p-4 bg-[#0B0F1A] border border-[#7FA6D6]/20 rounded-lg space-y-3 cursor-pointer hover:border-[#C08A2B]/40 transition-colors group" @click="openModal('drift')">
+                     <div class="flex items-center justify-between">
+                         <span class="text-[10px] text-[#C08A2B] font-bold uppercase tracking-widest">Why anchors matter</span>
+                     </div>
+                     <div class="grid grid-cols-2 gap-4">
+                         <div class="space-y-1 opacity-50">
+                             <div class="text-[9px] text-[#7FA6D6] uppercase">Unanchored Input</div>
+                             <div class="text-[10px] text-[#E9ECF3] font-mono leading-tight">"A tool for focus."</div>
+                         </div>
+                         <div class="space-y-1">
+                             <div class="text-[9px] text-[#C08A2B] uppercase flex items-center gap-1 group-hover:text-[#C08A2B] transition-colors">Anchored <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                             <div class="text-[10px] text-[#E9ECF3] font-mono leading-tight">"Helps users maintain deep focus via time-blocking."</div>
+                         </div>
+                     </div>
+                     <div class="pt-2 text-[10px] text-[#7FA6D6]/60 italic border-t border-[#7FA6D6]/10 group-hover:text-[#7FA6D6] transition-colors">
+                         With anchors, recognition does not drift.
+                     </div>
+                 </div>
+
+                 <!-- Copiable Prompt -->
+                <div v-if="result.brandPrompt" class="space-y-3">
                     <div class="relative group">
-                        <div class="absolute inset-0 bg-black/50 rounded-xl"></div>
-                        <pre class="relative z-10 p-4 h-32 overflow-y-auto text-[10px] font-mono text-textMuted bg-black/40 rounded-xl border border-white/10 scrollbar-thin scrollbar-thumb-white/10">{{ result.brandPrompt.text }}</pre>
-                        
-                        <div class="absolute bottom-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span class="text-[10px] bg-black/80 px-2 py-1 rounded text-white">Preview</span>
-                        </div>
+                        <div class="absolute inset-0 bg-[#0B0F1A]/80 rounded-xl"/>
+                        <pre class="relative z-10 p-4 h-48 overflow-y-auto text-[10px] font-mono text-[#7FA6D6] bg-[#0B0F1A]/60 rounded-xl border border-[#7FA6D6]/10 scrollbar-thin scrollbar-thumb-[#7FA6D6]/20 select-all">{{ result.brandPrompt.text }}</pre>
                     </div>
-
-                    <button 
-                        @click="copyPrompt(result.brandPrompt.text)" 
-                        :disabled="isPolishedLoading"
-                        class="w-full py-4 rounded-xl font-bold uppercase tracking-widest transition-all shadow-[0_0_30px_rgba(204,255,0,0.15)] flex items-center justify-center gap-2"
-                        :class="promptCopied ? 'bg-green-500 text-black shadow-[0_0_30px_rgba(0,255,0,0.3)] scale-[1.02]' : (isPolishedLoading ? 'bg-surface/20 text-textMuted cursor-wait border border-white/5 shadow-none' : 'bg-accent text-black hover:brightness-110 active:scale-[0.98]')"
+                     <button 
+                        :disabled="isPolishedLoading" 
+                        class="w-full py-3 rounded-xl font-bold uppercase tracking-widest text-xs border border-[#7FA6D6]/20 hover:border-[#C08A2B]/50 hover:text-[#C08A2B] transition-all flex items-center justify-center gap-2"
+                        @click="copyPrompt(result.brandPrompt.text)"
                     >
-                         <span v-if="isPolishedLoading">Generating...</span>
-                         <span v-else-if="promptCopied">Copied to Clipboard!</span>
-                         <span v-else>Copy Brand Prompt</span>
-                         <svg v-if="!isPolishedLoading && !promptCopied" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                         <svg v-if="promptCopied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                         <span v-if="isPolishedLoading">Shaping brand system...</span>
+                         <span v-else-if="promptCopied">Copied!</span>
+                         <span v-else>Copy full system</span>
                      </button>
                 </div>
-                
-                </div> <!-- End Brand Prompt Wrapper -->
-                
+
+                <!-- Recognition Time Card -->
+                <div class="p-5 bg-gradient-to-br from-[#121624] to-[#0B0F1A] border border-[#7FA6D6]/10 rounded-xl flex items-center justify-between gap-4 cursor-pointer hover:border-[#7FA6D6]/30 transition-all group" @click="openModal('continuity')">
+                    <div class="space-y-1">
+                         <div class="text-xs font-bold text-[#E9ECF3]">Recognition over time</div>
+                         <p class="text-[10px] text-[#7FA6D6] max-w-[200px] leading-relaxed">
+                            Six months from now, when you add new pages or campaigns, your recognition stays anchored.
+                         </p>
+                    </div>
+                    <button class="px-3 py-2 bg-[#121624] hover:bg-[#1A1F30] border border-[#7FA6D6]/20 rounded text-[10px] font-bold text-[#C08A2B] uppercase tracking-widest transition-colors group-hover:bg-[#C08A2B]/10">
+                        See how continuity works
+                    </button>
+                </div>
+             </section>
+
+             <!-- 6. AI Context Block (New) -->
+             <section v-if="result" class="space-y-4 pt-12 pb-24 border-t border-[#7FA6D6]/10 animate-in fade-in slide-in-from-bottom duration-700">
+                  <div class="flex items-center gap-3 text-[#C08A2B] text-[10px] uppercase tracking-widest font-bold opacity-70">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#C08A2B]"/>
+                    AI Context Block
+                </div>
+                <div class="relative group">
+                    <pre class="p-4 bg-[#0B0F1A] border border-[#7FA6D6]/20 rounded-lg text-[10px] text-[#7FA6D6] font-mono whitespace-pre-wrap leading-relaxed select-all">{{ aiContextBlock }}</pre>
+                    <button 
+                        class="absolute top-2 right-2 p-2 rounded bg-[#121624] text-[#7FA6D6] hover:text-[#E9ECF3] border border-[#7FA6D6]/10 text-[10px] uppercase tracking-wider font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+                        @click="copyPrompt(aiContextBlock)"
+                    >
+                        Copy
+                    </button>
+                </div>
              </section>
 
         </div>
       </div>
-
     </main>
-
-    <!-- Locked Modal (Demo) -->
-    <div v-if="lockedModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200" @click.self="lockedModalOpen = false">
-        <div class="w-full max-w-sm bg-surface rounded-2xl border border-white/10 p-8 text-center space-y-4 shadow-2xl animate-in zoom-in-95 duration-200">
-             <div class="w-12 h-12 mx-auto rounded-full bg-accent/20 flex items-center justify-center text-accent text-xl font-bold mb-4">
-                 🔒
-             </div>
-             <h3 class="text-2xl font-bold text-text">Unlock Full Customization</h3>
-             <p class="text-textMuted text-sm leading-relaxed">
-                 Manual <span class="text-white font-bold">{{ lockedFeature }}</span> selection is available in the paid plan. For this demo, we auto-assign the best matching vibe.
-             </p>
-             <div class="pt-4 flex gap-3 justify-center">
-                 <button @click="lockedModalOpen = false" class="px-5 py-2.5 rounded-lg border border-white/10 hover:bg-white/5 text-sm font-medium transition-colors text-text">Close</button>
-             </div>
-        </div>
-    </div>
+    
+    <!-- Modals -->
+    <client-only>
+        <AnchorModal 
+            :is-open="!!activeModalId"
+            :content="activeModalContent"
+            @close="closeModal"
+            @primary="closeModal"
+        />
+    </client-only>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
-import LoadingSpinnerRing from '../../components/ui/LoadingSpinnerRing.vue';
+import AnchorOverlay from '~/components/demo/AnchorOverlay.vue';
+import AnchorModal from '~/components/demo/AnchorModal.vue';
+import { LockIcon } from 'lucide-vue-next';
+
+// Modal State
+const activeModalId = ref(null);
+const activeModalContent = computed(() => activeModalId.value ? ANCHOR_MODALS[activeModalId.value] : null);
+
+const openModal = (id) => {
+    activeModalId.value = id;
+};
+
+const closeModal = () => {
+    activeModalId.value = null;
+};
+
+const ANCHOR_MODALS = {
+    recognition: {
+        title: 'Anchor your recognition',
+        body: [
+            'Right now, your product’s recognition is inferred from what you typed in this session.',
+            'That works for exploration.\nIt does not last.',
+            'When you anchor recognition, dlytful treats your product’s identity as fixed input, not a suggestion.',
+            'This means:\n• The same inputs always produce the same interpretation\n• New outputs inherit the same identity\n• Recognition does not drift over time or remix',
+            'Without an anchor, recognition resets.'
+        ],
+        unlocking: [
+            'Locks your product’s core identity',
+            'Preserves meaning across sessions',
+            'Turns inference into a stable reference point'
+        ],
+        primaryCta: 'Anchor recognition',
+        secondaryCta: 'Keep exploring without anchoring'
+    },
+    archetype: {
+        title: 'Anchor your archetype',
+        body: [
+            'Your archetype is currently inferred from language patterns and emotional cues.',
+            'That inference is accurate.\nBut it is not authoritative.',
+            'When you anchor your archetype, you decide how your product should be recognized, not just how it happens to read.',
+            'With an archetype anchor, you can:\n• Manually select your primary archetype\n• Blend multiple archetypes with intent\n• Prevent archetype drift across remixes and future inputs',
+            'Without an anchor, archetype may shift as wording changes.'
+        ],
+        unlocking: [
+            'Gives you direct control over identity signals',
+            'Stabilizes tone, language, and design decisions',
+            'Ensures consistency across all expressions'
+        ],
+        primaryCta: 'Anchor archetype',
+        secondaryCta: 'Leave inferred for now'
+    },
+    constraints: {
+        title: 'Anchor your constraints',
+        body: [
+            'These constraints are currently inferred from your inputs.',
+            'They are sensible defaults.\nThey are not boundaries.',
+            'When you anchor constraints, you tell dlytful exactly what must always be preserved and what must never appear, no matter the context.',
+            'With constraint anchors, you can:\n• Edit what must be preserved\n• Define what must be avoided\n• Apply constraints across all future outputs',
+            'Without anchors, constraints may soften or disappear as context changes.'
+        ],
+        unlocking: [
+            'Turns preferences into rules',
+            'Eliminates unwanted language and tone',
+            'Protects your product from subtle drift'
+        ],
+        primaryCta: 'Anchor constraints',
+        secondaryCta: 'View inferred constraints only'
+    },
+    questions: {
+        title: 'Resolve open questions',
+        body: [
+            'These questions represent ambiguity in how your product is recognized.',
+            'Right now, dlytful keeps them visible so you can see where meaning is still undefined.',
+            'When you answer and anchor these questions, dlytful stops guessing.',
+            'Answering these questions allows you to:\n• Define your core value explicitly\n• Clarify differentiation and alternatives\n• Turn uncertainty into recognition rules',
+            'Until then, these areas remain intentionally open.'
+        ],
+        unlocking: [
+            'Lets you answer each question once',
+            'Converts answers into recognition constraints',
+            'Removes ambiguity from future outputs'
+        ],
+        primaryCta: 'Anchor recognition clarity',
+        secondaryCta: 'Leave questions open'
+    },
+    drift: {
+        title: 'Why anchors matter',
+        body: [
+            'Without anchors, small wording changes can shift how your product is interpreted.',
+            'That shift is subtle.\nBut over time, it compounds.',
+            'Anchors prevent this by treating identity as fixed input, not something to reinterpret each time.',
+            'With anchors:\n• Recognition stays consistent\n• Expression can vary safely\n• Your product remains recognizable'
+        ],
+        unlocking: [],
+        primaryCta: 'See anchors in action',
+        secondaryCta: 'Close'
+    },
+    continuity: {
+        title: 'Recognition over time',
+        body: [
+            'Six months from now, when you add new pages or campaigns, your recognition stays anchored.',
+            'This ensures that as your product grows, your brand system remains the single source of truth.',
+            'No matter how many times you remix or generate new assets, the core identity will not drift.'
+        ],
+        unlocking: [
+            'Keeps your brand system as the source of truth',
+            'Prevents drift over months of usage',
+            'Ensures long-term consistency'
+        ],
+        primaryCta: 'Anchor your brand',
+        secondaryCta: 'Close'
+    }
+};
 
 // Debug State
 const showDebug = ref(false);
-const lockedModalOpen = ref(false);
-const lockedFeature = ref('');
-
-const openLockedModal = (feature) => {
-    lockedFeature.value = feature;
-    lockedModalOpen.value = true;
-};
 
 const promptCopied = ref(false);
 const copyPrompt = (text) => {
@@ -440,7 +597,6 @@ const copyPrompt = (text) => {
 // State
 const inputs = ref({
     q1_core_what: '',
-    q1_product_type: '', // for backward compat/consistency or just product_type? Template used inputs.product_type
     product_type: '', 
     q2_moment: '',
     q3_url_or_desc: ''
@@ -448,68 +604,116 @@ const inputs = ref({
 
 const result = ref(null);
 const loading = ref(false);
-const isPolishedLoading = ref(false); // New state for Section 3
+const isPolishedLoading = ref(false); 
 const statusLabel = ref('Processing...');
 
 // Computed Step
 const activeStep = computed(() => {
-    if (inputs.value.q2_moment.trim().length > 2) return 2; // Moment exists -> Step 2 (Upgrade)
-    return 0; // Start
+    if (inputs.value.q3_url_or_desc.trim().length > 0) return 3;
+    if (inputs.value.q2_moment.trim().length > 0) return 2;
+    if (inputs.value.q1_core_what.trim().length > 0) return 1;
+    return 0;
 });
 
-// -- VIBE CONSTANTS --
-const ARCHETYPES = [
-    'The Innocent', 'The Sage', 'The Explorer', 'The Outlaw', 'The Magician', 'The Hero',
-    'The Lover', 'The Jester', 'The Caregiver', 'The Ruler', 'The Creator', 'The Everyman'
-];
-const TONE_OPTIONS = [
-    'sage', 'creator', 'jester', 'professional', 'empathetic', 'bold', 'minimal', 'witty'
-];
-// Simplified Palette list (Just IDs or basic objects to pick from? Backend has full data. 
-// We'll just pick an ID or index. Random seed in backend handled this before.
-// Requirement: "state.paletteId". Let's use a simple ID if backend supports it, or just random index.
-// Actually backend `demo.post.ts` used `CURATED_PALETTES`. Let's just send `palette_idx` or `palette_seed`?
-// User asked for "paletteId". I will assume backend can handle an index or ID.
-// I'll pick a random number 0-100 as palette_id/seed for now, or just let backend handle palette if strictly not required to be full ID.
-// Wait, User said "state.paletteId". I will use a string ID 'p1'...'p5'.
-const PALETTE_IDS = ['p1', 'p2', 'p3', 'p4', 'p5']; // Mock IDs, backend will map or ignore if not implemented yet. 
-// Actually, backend `demo.post.ts` picks from `CURATED_PALETTES`. 
-// I will let backend continue to pick Palette RANDOMLY if I don't send explicit one, OR I send a seed.
-// Requirement B: "palette_sig = palette_id string".
-// I'll define `paletteId` as a random string hash for now to ensure cache uniqueness.
-// And `demo.post.ts` can use it to seed the palette picker.
-
-const vibeState = ref({
-    toneIds: [],
-    archetype: '',
-    paletteId: ''
-});
-
-const randomizeVibe = () => {
-    // Pick Archetype
-    vibeState.value.archetype = ARCHETYPES[Math.floor(Math.random() * ARCHETYPES.length)];
-    
-    // Pick 3 unique Tones
-    const shuffled = [...TONE_OPTIONS].sort(() => 0.5 - Math.random());
-    vibeState.value.toneIds = shuffled.slice(0, 3).sort(); // Sort for stability in display/cache if needed
-    
-    // Pick Palette ID (Random Seed)
-    vibeState.value.paletteId = Math.random().toString(36).substring(7);
+const FIELD_LABELS = {
+    target: 'Target Audience',
+    product: 'Product Name',
+    category: 'Category',
+    value: 'Core Value',
+    alternative: 'Alternative',
+    differentiator: 'Differentiation',
+    proof: 'Proof Point'
 };
+
+
+const EXAMPLES = [
+    { title: "Patchwork", q1: "A tiny product site builder for indie apps.", q2: "Founders ship fast but their landing pages look templated. They want a distinct look without design skills.", q3: "Simple, crisp, confident. Swiss grid. Warm accent.", type: "saas" },
+    { title: "LogLens", q1: "A log viewer that turns noisy traces into readable incidents.", q2: "On-call engineers waste time digging through raw logs and missing the real cause.", q3: "Terminal feel, calm urgency, minimal UI.", type: "devtools" },
+    { title: "ShipKit", q1: "A release checklist tool that lives in GitHub issues.", q2: "Teams forget steps and ship broken releases. They want consistency without process overhead.", q3: "Strict, reliable, no fluff.", type: "devtools" },
+    { title: "MintRun", q1: "A budgeting app for people who hate budgeting.", q2: "Users fall off because tracking feels like punishment and guilt.", q3: "Gentle, supportive, soft colors, short sentences.", type: "mobile" },
+    { title: "StrideNote", q1: "A walking habit app that turns walks into small story chapters.", q2: "People know walking helps but they get bored and stop after a week.", q3: "Playful, light, cozy, illustrated vibe.", type: "mobile" },
+    { title: "MealMap", q1: "A recipe organizer that generates shopping lists by pantry.", q2: "Home cooks lose recipes across screenshots, tabs, and notes. Grocery trips become chaotic.", q3: "Warm, homey, handwritten feel without being messy.", type: "consumer" },
+    { title: "GardenGauge", q1: "A garden planner that tracks watering, sunlight, and harvest dates.", q2: "New gardeners kill plants because they cannot remember schedules and conditions.", q3: "Natural, earthy, calm, quiet confidence.", type: "consumer" },
+    { title: "FocusNest", q1: "A focus timer for people who spiral when they procrastinate.", q2: "Users feel anxious and shame when they fall behind. They want structure without pressure.", q3: "Reassuring, soft, safe, minimal.", type: "mobile" },
+    { title: "TutorTrail", q1: "A study planner that turns topics into short daily drills.", q2: "Students cram, forget, and lose motivation. They need a steady routine.", q3: "Clear, encouraging, structured.", type: "consumer" },
+    { title: "ClipForge", q1: "A video clipper that auto-finds highlights for short content.", q2: "Creators spend hours searching footage and miss posting windows.", q3: "Bold, punchy, kinetic.", type: "saas" },
+    { title: "PetPulse", q1: "A pet care tracker for feeding, meds, and vet visits.", q2: "Households forget schedules and duplicate tasks. Pets suffer quietly.", q3: "Friendly, trustworthy, warm.", type: "mobile" },
+    { title: "TripThread", q1: "A trip planner that turns bookings into a clean itinerary.", q2: "Travel plans live in emails and screenshots. People miss details and feel stressed.", q3: "Calm, organized, premium but not flashy.", type: "consumer" },
+    { title: "ChordRoom", q1: "A practice app that turns riffs into bite-sized loops.", q2: "Guitarists practice randomly and plateau. They want progress without theory overload.", q3: "Cool, playful, slightly rebellious.", type: "mobile" },
+    { title: "QueueKind", q1: "A waitlist and booking tool for small barbers and salons.", q2: "No-shows and chaotic scheduling hurt revenue and reputation.", q3: "Professional, modern, friendly.", type: "saas" },
+    { title: "InvoiceSprout", q1: "An invoicing tool for freelancers who want it done in one minute.", q2: "Invoices pile up. People avoid billing because it feels tedious and awkward.", q3: "Direct, clean, confident.", type: "saas" },
+    { title: "ReadRidge", q1: "A reading tracker that nudges you with tiny, specific prompts.", q2: "People buy books and never finish them. They want momentum.", q3: "Quiet, literate, minimal.", type: "mobile" },
+    { title: "CrewBoard", q1: "A small community hub for niche hobby groups.", q2: "Groups are scattered across chats. Knowledge gets lost and newcomers feel excluded.", q3: "Welcoming, simple, human.", type: "saas" },
+    { title: "BugBard", q1: "A bug report widget that turns complaints into reproducible steps.", q2: "Users send vague issues. Developers cannot reproduce them.", q3: "Dry, precise, slightly witty.", type: "devtools" },
+    { title: "SleepSignal", q1: "A sleep journal that links patterns to simple changes.", q2: "People try random advice and give up. They want clear cause and effect.", q3: "Calm, scientific, reassuring.", type: "mobile" },
+    { title: "CleanSlate", q1: "A cleaning routine app that assigns tiny tasks daily.", q2: "Homes slowly get messy, then cleaning becomes a weekend disaster.", q3: "Light, optimistic, non-judgmental.", type: "mobile" }
+];
+
+
+const openQuestions = computed(() => {
+    if (!result.value?.copy?.positioningParts) return [];
+    const parts = result.value.copy.positioningParts;
+    return Object.entries(parts)
+        .filter(([_k, v]) => !v || v.toLowerCase().includes('not specified'))
+        .map(([k, v]) => ({
+            label: FIELD_LABELS[k] || k, // Map to human readable
+            key: k,
+            value: v
+        }));
+});
+
+const valOr = (v, fallback = 'Not specified') => {
+    if (!v || (typeof v === 'string' && v.trim() === '')) return fallback;
+    if (typeof v === 'string' && v.toLowerCase().includes('not specified')) return fallback;
+    return v;
+}
+
+const aiContextBlock = computed(() => {
+    if (!result.value) return '';
+    
+    // Helper to get text
+    const r = result.value;
+    const ident = r.identity || {};
+    const parts = r.copy?.positioningParts || {};
+    const constr = r.constraints || {};
+    
+    // Constraints formatting
+    const banned = constr.must_avoid || [];
+    const bannedDisplay = banned.slice(0, 5).join(', ');
+    const bannedMore = banned.length > 5 ? ` (+${banned.length - 5} more)` : '';
+
+    return `RECOGNITION LAYER SUMMARY
+Name: ${valOr(ident.productName)}
+Category: ${valOr(ident.category)}
+Audience: ${valOr(ident.audience)}
+Primary behavior: ${valOr(ident.behavior)}
+Deterministic fingerprint: ${r.inputHash || 'pending'}
+
+PRODUCT DEFINITION
+Problem: ${valOr(parts.alternative)}
+Core behavior: ${valOr(ident.outcome)}
+Mechanism: ${valOr(parts.differentiator)}
+Non goals: Not specified
+Constraints: Not specified
+
+RECOGNITION CONSTRAINTS
+Must preserve: ${constr.must_preserve ? constr.must_preserve.join(', ') : 'None'}
+Must avoid: ${bannedDisplay}${bannedMore}
+Tone rails: ${r.vibe?.toneTags ? r.vibe.toneTags.join(', ') : 'Not specified'}
+Archetype seed: ${r.vibe?.archetype || 'Not specified'}`;
+});
+
 
 // -- API ACTIONS --
 
 // 1. Deterministic Baseline (Fast)
 const compileBaseline = async () => {
     if (!inputs.value.q1_core_what) return;
-    
-    // If we are already displaying a Demo result, do not overwrite with baseline
     if (result.value?.debug?.demo) return;
     
-    // Only set loading if we don't have a result yet to avoid flicker
     if (!result.value) {
         loading.value = true;
-        statusLabel.value = 'Drafting...';
+        statusLabel.value = 'Shaping Draft...';
     }
 
     try {
@@ -518,26 +722,18 @@ const compileBaseline = async () => {
             body: { 
                 q1_core_what: inputs.value.q1_core_what,
                 product_type: inputs.value.product_type || 'other',
-                // Dummies to satisfy schema, but won't be displayed if they are bad
-                q2_audience_who: 'Customers', 
+                q2_audience_who: 'Users', 
                 q7_competitors_differentiation: 'Generic' 
             }
         });
         
-        // If we already have a "rich" result (with real LLM audience/tokens), preserve them?
-        // Actually, if user types in Q1, they are changing Identity. 
-        // We should update Identity fields but maybe keep the "Soft" fields if they exist?
-        // Simpler: Just update the Identity parts if result exists.
-        
-        if (result.value && result.value.brandSpec) {
+        // Only update minimal structure if we are in early draft
+         if (result.value && result.value.brandSpec) {
              result.value.brandSpec.productName = res.brandSpec.productName;
              result.value.brandSpec.category = res.brandSpec.category;
-             // Update One-liner derived from new name? Yes.
-             if (activeStep.value < 2) {
-                 result.value.assets = res.assets; // Reset assets to baseline if we haven't unlocked Q2 yet
-             }
         } else {
-            result.value = res;
+            // Map legacy compile response to new demo structure locally for skeleton?
+            // Actually, let's just wait for full gen.
         }
     } catch (e) {
         console.error(e);
@@ -546,28 +742,15 @@ const compileBaseline = async () => {
     }
 }
 
-// 2. Full LLM Upgrade (Demo Mode Aware)
+// 2. Full Compiler Run
 const generateFull = async (isRemix = false) => {
-    if (activeStep.value < 2) return;
+    // Only run if we have enough context (Step 2+ or explicit remix)
+    if (activeStep.value < 2 && !isRemix) return;
     
     loading.value = true;
-    isPolishedLoading.value = true; // START LOADING FOR SECTION 3
-    statusLabel.value = isRemix ? 'Remixing...' : (inputs.value.q3_url_or_desc ? 'Refining...' : 'Upgrading...');
+    isPolishedLoading.value = true;
+    statusLabel.value = 'Shaping brand system...';
     
-    // If Remix or First Run (and no vibe set), randomize
-    if (isRemix || !vibeState.value.archetype) {
-        randomizeVibe();
-    }
-    
-    // Clear Assets to prevent flash of old content
-    if (result.value) {
-        result.value.assets = {
-            oneLiner: null,
-            heroHeadlines: null,
-            positioning: null
-        };
-    }
-
     try {
         const payload = { 
             q1_core_what: inputs.value.q1_core_what,
@@ -575,12 +758,7 @@ const generateFull = async (isRemix = false) => {
             q2_moment: inputs.value.q2_moment,
             q3_url_or_desc: inputs.value.q3_url_or_desc,
             remix: isRemix,
-            remix_nonce: crypto.randomUUID(),
-            knownProductName: result.value?.brandSpec?.productName,
-            // Vibe State
-            tone_ids: vibeState.value.toneIds,
-            archetype: vibeState.value.archetype,
-            palette_id: vibeState.value.paletteId
+            remix_nonce: isRemix ? crypto.randomUUID() : undefined
         };
 
         const res = await $fetch('/api/generate/demo', {
@@ -589,119 +767,40 @@ const generateFull = async (isRemix = false) => {
             headers: { 'Cache-Control': 'no-store' }
         });
         
-        // Map Response to State compatible with Template
-        // res shape: { identity, vibe, oneLiner, debug }
+        result.value = res;
         
-        const mappedResult = {
-            brandSpec: {
-                productName: res.identity.productName,
-                category: res.identity.category,
-                // These are needed by template
-                archetypePrimary: res.vibe.archetype,
-                audience: "Users", // Fallback/Dummy for template
-                outcome: res.identity.outcome || "achieve goal",
-                proof: res.identity.proof || "",
-                designTokens: {
-                    accent: res.vibe.palette.accent,
-                    base: res.vibe.palette.base,
-                    ink: res.vibe.palette.ink,
-                    font: res.vibe.palette.font,
-                    radius: res.vibe.palette.radius
-                },
-                voice: {
-                    soundsLike: res.vibe.toneTags,
-                    neverLike: [],
-                    neverWords: []
-                }
-            },
-            assets: {
-                oneLiner: res.oneLiner, 
-                heroHeadlines: res.headlines, 
-                positioning: res.positioning 
-            },
-            markdown: res.brandPromptMarkdown, // Binding for Copy Button
-            brandPrompt: res.brandPrompt,      // Legacy object
-            debug: {
-                ...res.debug,
-                demo: true // Ensure baseline guard still works
-            }, 
-            assignment: {
-                 // For compatibility if needed, but we used it for prevAssignment logic which is now obsolete
-                designTokens: res.vibe.palette // For CSS vars
-            }
-        };
-
-        // Explicitly map positioningParts if present for the robust display
-        if (res.copy && res.copy.positioningParts) {
-             mappedResult.assets.positioningParts = res.copy.positioningParts;
-        }
-
-        // Merge strategy: Replace result entirely
-        result.value = mappedResult;
-        
-        // Apply CSS Variables relative to document root for global theme
-        if (mappedResult.brandSpec.designTokens) {
-            const root = document.documentElement;
-            const t = mappedResult.brandSpec.designTokens;
-            root.style.setProperty('--accent', t.accent);
-            root.style.setProperty('--base', t.base);
-            root.style.setProperty('--ink', t.ink);
-            root.style.setProperty('--radius', `${t.radius}rem`);
-            root.style.setProperty('--font', t.font);
-        }
-
-        // NO SECONDARY CALL: Positioning is now fully integrated in /api/generate/demo
-        // This ensures Tone Consistency and prevents content flashing.
+        // No custom palette override for strict landing-page-match mode
 
     } catch (e) {
         console.error(e);
-        // Toast?
+        statusLabel.value = 'Error Shaping Brand';
     } finally {
         loading.value = false;
-        isPolishedLoading.value = false; // END LOADING
+        isPolishedLoading.value = false;
     }
 }
 
 // -- DEBOUNCED INPUT HANDLERS --
-
 const onInputQ1 = useDebounceFn(() => {
     compileBaseline();
 }, 500);
 
 const onInputQ2 = useDebounceFn(() => {
+    // Trigger compilation when entering Step 2 behavior
     if (activeStep.value >= 2) generateFull(false);
 }, 1500);
 
 const onInputQ3 = useDebounceFn(() => {
-    if (activeStep.value >= 2) generateFull(false);
+    // Optional re-compile for visual signal
+    if (activeStep.value >= 3) generateFull(false);
 }, 1500);
 
 
 // -- USER ACTIONS --
 
-const route = useRoute();
 
-onMounted(() => {
-    if (route.query.example) {
-        // slight delay to ensure hydration
-        setTimeout(() => useExample(), 500);
-    }
-});
 
-const useExample = () => {
-    inputs.value = {
-        q1_core_what: "Dlytful is a deterministic brand compiler that turns messy notes into production-ready brand specs.",
-        product_type: "devtools",
-        q2_moment: "A founder is staring at a blank page, overwhelmed by 'brand strategy'. They paste their raw thoughts into Dlytful, hit compile, and instantly get a reusable brand system they can hand to their designers and AI tools. They feel clarity and relief.",
-        q3_url_or_desc: "Minimal, dark mode, high contrast, clean typography, neon accents."
-    };
-    // Trigger compilation sequence
-    loading.value = true;
-    statusLabel.value = 'Compiling...';
-    // Cascading calls to simulate progression
-    setTimeout(() => compileBaseline(), 100);
-    setTimeout(() => generateFull(false), 1200);
-}
+
 
 const reset = () => {
     inputs.value = { q1_core_what: '', product_type: '', q2_moment: '', q3_url_or_desc: '' };
@@ -709,40 +808,21 @@ const reset = () => {
     isPolishedLoading.value = false;
 }
 
-const resumeLast = async () => {
+const loadExample = (ex) => {
+    inputs.value = {
+        q1_core_what: ex.q1,
+        product_type: ex.type || 'other',
+        q2_moment: ex.q2,
+        q3_url_or_desc: ex.q3
+    };
     loading.value = true;
-    statusLabel.value = 'Resuming...';
-    try {
-        const { found, sprint } = await $fetch('/api/sprints/latest');
-        if (found && sprint) {
-            const saved = sprint.inputs || {};
-            // Map saved inputs correctly 
-            inputs.value = {
-                q1_core_what: saved.q1 || saved.q1_core_what || '',
-                product_type: saved.product_type || 'other',
-                q2_moment: saved.q2 || saved.q2_moment || '',
-                q3_url_or_desc: saved.q3 || saved.q3_url_or_desc || ''
-            };
-            if (sprint.unlocks) {
-                 result.value = {
-                    brandSpec: sprint.unlocks.brandSpec || sprint.unlocks, 
-                    assets: sprint.unlocks.assets,
-                    specHash: sprint.spec_hash,
-                    markdown: sprint.brand_prompt
-                };
-            } else {
-                await generateFull(false);
-            }
-        }
-    } catch (e) {
-        console.error(e);
-    } finally {
-        loading.value = false;
-    }
+    statusLabel.value = 'Loading Example...';
+    setTimeout(() => generateFull(false), 500);
 }
 
-const copy = (text) => {
-    if (!text) return;
-    navigator.clipboard.writeText(text);
+const loadRandomExample = () => {
+    const random = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    loadExample(random);
 }
+
 </script>

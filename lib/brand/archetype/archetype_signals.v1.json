@@ -1,0 +1,338 @@
+{
+    "version": "v1",
+    "notes": "Deterministic archetype scoring. Use q1/q2/q3/product_type. Highest score wins. Tie-break with inputHash.",
+    "global": {
+        "normalize": {
+            "lowercase": true,
+            "strip_punctuation": true,
+            "collapse_whitespace": true
+        },
+        "fluff_dampeners": [
+            {
+                "pattern": "\\b(revolutionary|ground[- ]?breaking|cutting[- ]?edge|seamless|robust|next[- ]?gen|world[- ]?class|best[- ]?in[- ]?class|innovative|game[- ]?changing)\\b",
+                "multiplier": 0.6
+            }
+        ]
+    },
+    "archetypes": {
+        "The Outlaw": {
+            "description": "Contrarian, anti-status-quo, provocative, rule-breaking.",
+            "signals": [
+                {
+                    "type": "phrase",
+                    "pattern": "break the rules",
+                    "weight": 7
+                },
+                {
+                    "type": "phrase",
+                    "pattern": "no more",
+                    "weight": 4
+                },
+                {
+                    "type": "phrase",
+                    "pattern": "stop doing",
+                    "weight": 4
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(disrupt|disruption|rebel|rebellious|outlaw|contrarian|anti[- ]?status[- ]?quo)\\b",
+                    "weight": 6
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(revolutionize|ground[- ]?breaking|smash|kill|tear down|burn down|wreck|flip|against)\\b",
+                    "weight": 5
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(unapologetic|ruthless|brutal honesty|no bs|no-bs)\\b",
+                    "weight": 4
+                }
+            ],
+            "anti_signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(compliance|governance|policy|regulated)\\b",
+                    "weight": -3
+                }
+            ]
+        },
+        "The Hero": {
+            "description": "Achievement, overcoming obstacles, performance, winning, shipping, discipline.",
+            "signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(win|winning|beat|crush|dominate|conquer|overcome|battle|grind|disciplined|discipline)\\b",
+                    "weight": 5
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(ship|launch|finish|complete|execute)\\b",
+                    "weight": 4
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(stronger|faster|harder|tough|stamina|endurance|performance)\\b",
+                    "weight": 4
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(fitness|training|workout|marathon|run|gym)\\b",
+                    "weight": 3
+                }
+            ],
+            "anti_signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(cozy|gentle|soft|comfort)\\b",
+                    "weight": -2
+                }
+            ]
+        },
+        "The Magician": {
+            "description": "Transformation, wow, instant results, magical ease, surprising outcomes.",
+            "signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(magic|magical|wizard|spell|alchemy|transform|transformation)\\b",
+                    "weight": 6
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(instantly|in seconds|one click|one-click|auto[- ]?magic)\\b",
+                    "weight": 4
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(aha|wow|mind[- ]?blown|shockingly)\\b",
+                    "weight": 3
+                }
+            ],
+            "anti_signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(deterministic|spec|schema|contract)\\b",
+                    "weight": -2
+                }
+            ]
+        },
+        "The Sage": {
+            "description": "Clarity, truth, definition, structure, learning, reducing confusion.",
+            "signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(clarify|clarity|define|definition|truth|accurate|precision|rigor|rigorous)\\b",
+                    "weight": 6
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(analysis|explain|understand|reason|logic|framework|model)\\b",
+                    "weight": 4
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(spec|schema|taxonomy|ontology|normalize|compile|compiler)\\b",
+                    "weight": 5
+                }
+            ],
+            "anti_signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(flirty|romantic|sensual)\\b",
+                    "weight": -3
+                }
+            ]
+        },
+        "The Ruler": {
+            "description": "Authority, standards, control, reliability, governance, systemization.",
+            "signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(standard|standards|govern|governance|policy|rules|compliance|audit)\\b",
+                    "weight": 6
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(control|consistency|deterministic|source of truth|single source)\\b",
+                    "weight": 6
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(enterprise|org|organization|stakeholders|approval)\\b",
+                    "weight": 3
+                }
+            ],
+            "anti_signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(meme|silly|chaos)\\b",
+                    "weight": -2
+                }
+            ]
+        },
+        "The Creator": {
+            "description": "Craft, design, making, originality, building systems, artistry with structure.",
+            "signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(build|craft|design|compose|create|maker|creative|prototype)\\b",
+                    "weight": 5
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(aesthetic|style|visual|typography|palette|tokens|ui)\\b",
+                    "weight": 4
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(original|distinct|signature|identity)\\b",
+                    "weight": 4
+                }
+            ],
+            "anti_signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(compliance|policy)\\b",
+                    "weight": -2
+                }
+            ]
+        },
+        "The Explorer": {
+            "description": "Discovery, freedom, experimentation, curiosity, travel, adventure.",
+            "signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(explore|explorer|discover|discovery|adventure|journey|frontier)\\b",
+                    "weight": 6
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(freedom|open[- ]?ended|wander|curious|curiosity|experiment)\\b",
+                    "weight": 4
+                }
+            ],
+            "anti_signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(standard|policy|compliance|deterministic)\\b",
+                    "weight": -2
+                }
+            ]
+        },
+        "The Caregiver": {
+            "description": "Support, safety, relief, guidance, reducing anxiety and risk.",
+            "signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(safe|safety|support|care|caring|relief|reassure|comfort)\\b",
+                    "weight": 5
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(anxiety|stress|overwhelm|burnout|tired|fatigue)\\b",
+                    "weight": 4
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(mental health|wellbeing|well-being|health)\\b",
+                    "weight": 3
+                }
+            ],
+            "anti_signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(ruthless|brutal|no bs|no-bs)\\b",
+                    "weight": -2
+                }
+            ]
+        },
+        "The Everyman": {
+            "description": "Relatable, practical, for regular people, no hype, down-to-earth.",
+            "signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(simple|practical|everyday|for everyone|normal people|regular)\\b",
+                    "weight": 5
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(no jargon|no fluff|straightforward|plain language)\\b",
+                    "weight": 4
+                }
+            ],
+            "anti_signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(elite|exclusive|luxury)\\b",
+                    "weight": -2
+                }
+            ]
+        },
+        "The Innocent": {
+            "description": "Simple, optimistic, clean, light, easy, friendly.",
+            "signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(easy|effortless|simple|clean|light|fresh|friendly)\\b",
+                    "weight": 5
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(peaceful|calm|gentle|cozy|wholesome)\\b",
+                    "weight": 4
+                }
+            ],
+            "anti_signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(disrupt|ruthless|brutal|fight)\\b",
+                    "weight": -3
+                }
+            ]
+        },
+        "The Jester": {
+            "description": "Playful, surprising, memes, humor, irreverence.",
+            "signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(fun|funny|humor|joke|meme|silly|weird|chaos)\\b",
+                    "weight": 6
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(witty|snark|roast|banter)\\b",
+                    "weight": 4
+                }
+            ],
+            "anti_signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(compliance|audit|policy)\\b",
+                    "weight": -2
+                }
+            ]
+        },
+        "The Lover": {
+            "description": "Belonging, intimacy, sensory, romance, connection.",
+            "signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(love|romance|intimate|sensual|desire|belong|connection)\\b",
+                    "weight": 6
+                },
+                {
+                    "type": "regex",
+                    "pattern": "\\b(beautiful|gorgeous|aesthetic|feel seen)\\b",
+                    "weight": 3
+                }
+            ],
+            "anti_signals": [
+                {
+                    "type": "regex",
+                    "pattern": "\\b(audit|compliance|policy|deterministic)\\b",
+                    "weight": -2
+                }
+            ]
+        }
+    }
+}

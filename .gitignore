@@ -47,4 +47,4 @@ id_rsa.pub
 Thumbs.db
 .vscode/
 !.vscode/extensions.json
-!.vscode/launch.json
+!.vscode/launch.json.demo_cache.json
